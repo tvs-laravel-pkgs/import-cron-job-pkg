@@ -1,0 +1,31 @@
+{
+    "name": "abs/import-cron-job-pkg",
+    "description": "For ImportCronJob CRUD",
+    "type": "library",
+    "require":
+    {},
+    "require-dev":
+    {},
+    "authors": [
+    {
+        "name": "Abdul",
+        "email": "abdulpro@gmail.com"
+    }],
+    "minimum-stability": "dev",
+    "extra":
+    {
+        "laravel":
+        {
+            "providers": [
+                "Abs\\ImportCronJobPkg\\ImportCronJobPkgServiceProvider"
+            ]
+        }
+    },
+    "autoload":
+    {
+        "psr-4":
+        {
+            "Abs\\ImportCronJobPkg\\": "src/"
+        }
+    }
+}
