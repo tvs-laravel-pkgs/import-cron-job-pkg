@@ -12,32 +12,24 @@ class ImportCronJobPermissionSeeder extends Seeder {
 	 */
 	public function run() {
 		$permissions = [
-			//MASTER > ImportCronJobS
-			4600 => [
+			10200 => [
 				'display_order' => 10,
 				'parent_id' => null,
-				'name' => 'ImportCronJobs',
-				'display_name' => 'ImportCronJobs',
+				'name' => 'import-cron-jobs',
+				'display_name' => 'Import Cron Jobs',
 			],
-			4601 => [
+			10201 => [
 				'display_order' => 1,
-				'parent_id' => 4600,
-				'name' => 'add-ImportCronJob',
-				'display_name' => 'Add',
+				'parent_id' => 10200,
+				'name' => 'view-all-import-cron-job',
+				'display_name' => 'View All',
 			],
-			4602 => [
-				'display_order' => 2,
-				'parent_id' => 4600,
-				'name' => 'edit-ImportCronJob',
-				'display_name' => 'Edit',
+			10202 => [
+				'display_order' => 1,
+				'parent_id' => 10200,
+				'name' => 'view-own-import-cron-job',
+				'display_name' => 'View Own Only',
 			],
-			4603 => [
-				'display_order' => 3,
-				'parent_id' => 4600,
-				'name' => 'delete-ImportCronJob',
-				'display_name' => 'Delete',
-			],
-
 		];
 
 		foreach ($permissions as $permission_id => $permsion) {
