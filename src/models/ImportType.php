@@ -54,4 +54,26 @@ class ImportType extends Model {
 		return $record;
 	}
 
+	public static function createMultipleFromArray($items) {
+
+		foreach ($items as $id => $item) {
+			$errors = [];
+			$record = self::firstOrNew([
+				'id' => $id,
+			]);
+			$record->fill($item['data']);
+			$record->save();
+
+			foreach ($item['columns'] as $column) {
+				$import_type_column = ImportTypeColumn::firstOrNew([
+					'company_id' => $column['company_id'],
+					'import_type_id' => $record->id,
+					'default_column_name' => $column['default_column_name'],
+				]);
+				$import_type_column->fill($column);
+				$import_type_column->save();
+			}
+		}
+	}
+
 }
