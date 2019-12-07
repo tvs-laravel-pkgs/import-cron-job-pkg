@@ -1,9 +1,7 @@
 <?php
 
-Route::group(['namespace' => 'Abs\ImportCronJobPkg', 'middleware' => ['web', 'auth'], 'prefix' => 'ImportCronJob-pkg'], function () {
-	Route::get('/ImportCronJobs/get-list', 'ImportCronJobController@getImportCronJobList')->name('getImportCronJobList');
-	Route::get('/ImportCronJob/get-form-data/{id?}', 'ImportCronJobController@getImportCronJobFormData')->name('getImportCronJobFormData');
-	Route::post('/ImportCronJob/save', 'ImportCronJobController@saveImportCronJob')->name('saveImportCronJob');
-	Route::get('/ImportCronJob/delete/{id}', 'ImportCronJobController@deleteImportCronJob')->name('deleteImportCronJob');
+Route::group(['namespace' => 'Abs\ImportCronJobPkg', 'middleware' => ['web', 'auth'], 'prefix' => 'import-cron-job-pkg'], function () {
+	Route::get('/import-jobs/get-list', 'ImportJobController@getImportJobList')->name('getImportJobList');
+	Route::get('/import-job/delete/{id}', 'ImportJobController@deleteImportJob')->name('deleteImportJob');
 
 });

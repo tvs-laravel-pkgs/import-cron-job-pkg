@@ -5,6 +5,7 @@ use App\Company;
 use App\Config;
 use App\ImportCronJobPkg\ImportCronJob;
 use DB;
+use Excel;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 
@@ -28,8 +29,8 @@ class PkgManualImportJobSeeder extends Seeder {
 		$admin = $company->admin();
 
 		$types_headers = ['ID', 'Import Job Type'];
-		$types = App\Config::where('config_type_id', 7007)->select(['id', 'name'])->get()->toArray();
-		$type_ids = App\Config::where('config_type_id', 7007)->pluck('id')->toArray();
+		$types = Config::where('config_type_id', 7007)->select(['id', 'name'])->get()->toArray();
+		$type_ids = Config::where('config_type_id', 7007)->pluck('id')->toArray();
 		$this->command->table($types_headers, $types);
 		$type_id = $this->command->anticipate("Enter Import Job Type ID", $type_ids);
 
@@ -37,19 +38,21 @@ class PkgManualImportJobSeeder extends Seeder {
 			7181 => [
 				'destination' => 'public/file-imports/coupon-codes/',
 				'file_name' => 'coupon_codes',
+				'required_columns' => [
+					'coupon_code',
+					'date_of_printing',
+					'points',
+				],
 			],
 		];
 
 		$destination_folder = $import_types[$type_id]['destination'];
 		$src_file = $this->command->ask("Enter file name", 'cc1');
 		// $no_of_items = $this->command->ask("Enter No of Warrnty Policy Details", '1');
-
-		$headers = Excel::load($destination_folder . $src_file . '.xlsx', function ($reader) {
+		$headers = Excel::load(storage_path('app/' . $destination_folder) . $src_file . '.xlsx', function ($reader) {
 			$reader->takeRows(1);
 		})->toArray();
 		$headers[0] = array_filter($headers[0]);
-
-		dd($headers[0]);
 
 		$timetamp = date('Y_m_d_H_i_s');
 		Storage::makeDirectory($destination, 0777);

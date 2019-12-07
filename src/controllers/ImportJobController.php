@@ -10,7 +10,7 @@ use Entrust;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 
-class ImportCronJobController extends Controller {
+class ImportJobController extends Controller {
 
 	public function __construct() {
 	}
