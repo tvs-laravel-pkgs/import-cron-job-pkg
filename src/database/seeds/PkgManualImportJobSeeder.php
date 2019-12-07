@@ -1,11 +1,14 @@
 <?php
+namespace Abs\ImportCronJobPkg\Database\Seeds;
 
 use App\Company;
+use App\Config;
 use App\ImportCronJobPkg\ImportCronJob;
+use DB;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 
-class ManualImportJobSeeder extends Seeder {
+class PkgManualImportJobSeeder extends Seeder {
 	/**
 	 * Run the database seeds.
 	 *
@@ -27,22 +30,30 @@ class ManualImportJobSeeder extends Seeder {
 		$types_headers = ['ID', 'Import Job Type'];
 		$types = App\Config::where('config_type_id', 7007)->select(['id', 'name'])->get()->toArray();
 		$type_ids = App\Config::where('config_type_id', 7007)->pluck('id')->toArray();
-
 		$this->command->table($types_headers, $types);
 		$type_id = $this->command->anticipate("Enter Import Job Type ID", $type_ids);
 
-		$src_file = $this->command->ask("Enter file name", 'BATPOL1');
-		$no_of_items = $this->command->ask("Enter No of Warrnty Policy Details", '1');
+		$import_types = [
+			7181 => [
+				'destination' => 'public/file-imports/coupon-codes/',
+				'file_name' => 'coupon_codes',
+			],
+		];
 
-		$headers = Excel::selectSheetsByIndex(0)->load($src_file, function ($reader) {
+		$destination_folder = $import_types[$type_id]['destination'];
+		$src_file = $this->command->ask("Enter file name", 'cc1');
+		// $no_of_items = $this->command->ask("Enter No of Warrnty Policy Details", '1');
+
+		$headers = Excel::load($destination_folder . $src_file . '.xlsx', function ($reader) {
 			$reader->takeRows(1);
 		})->toArray();
 		$headers[0] = array_filter($headers[0]);
 
-		$destination = config('custom.supplier_batch_serial_number_import');
+		dd($headers[0]);
+
 		$timetamp = date('Y_m_d_H_i_s');
 		Storage::makeDirectory($destination, 0777);
-		$output_file = $timetamp . '_supplier_batch_serial_number_import_output_file';
+		$output_file = $timetamp . '_' . $import_types[$type_id]['file_name'] . '_output_file';
 		Excel::create($output_file, function ($excel) use ($headers) {
 			$excel->sheet('Error Details', function ($sheet) use ($headers) {
 				$headings = array_keys($headers[0]);
