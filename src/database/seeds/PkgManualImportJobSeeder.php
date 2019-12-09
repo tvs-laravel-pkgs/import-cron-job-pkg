@@ -36,7 +36,7 @@ class PkgManualImportJobSeeder extends Seeder {
 
 		$import_types = [
 			7181 => [
-				'destination' => 'public/file-imports/coupon-codes/',
+				'destination' => 'app/public/file-imports/coupon-codes/',
 				'file_name' => 'coupon_codes',
 				'required_columns' => [
 					'coupon_code',
