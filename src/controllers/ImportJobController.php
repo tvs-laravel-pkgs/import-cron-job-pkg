@@ -54,4 +54,5 @@ class ImportJobController extends Controller {
 			})
 			->make(true);
 	}
+
 }

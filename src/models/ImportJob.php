@@ -4,8 +4,13 @@ namespace Abs\ImportCronJobPkg;
 
 use App\Company;
 use App\Config;
+use Auth;
+use Excel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Validator;
 
 class ImportCronJob extends Model {
 	use SoftDeletes;
@@ -68,4 +73,106 @@ class ImportCronJob extends Model {
 		}
 	}
 
+	public static function createImportJob(Request $r) {
+		$validator = Validator::make($r->all(), [
+			'type_id' => [
+				'required:true',
+			],
+			'entity_id' => [
+				'nullable',
+				'numeric',
+			],
+			'excel_file' => [
+				'required:true',
+			],
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'error' => 'Validation Error',
+				'errors' => $validator->errors()->all(),
+			]);
+		}
+
+		$import_type = ImportType::find($r->type_id);
+		if (!$import_type) {
+			return response()->json([
+				'success' => false,
+				'error' => 'Validation Error',
+				'errors' => [
+					'Invalid Import Type',
+				],
+			]);
+		}
+
+		ini_set('max_execution_time', 0);
+		ini_set('memory_limit', '-1');
+		$attachment = 'excel_file';
+		$attachment_extension = $r->file($attachment)->getClientOriginalExtension();
+		if ($attachment_extension != "xlsx" && $attachment_extension != "xls") {
+			$response = [
+				'success' => false,
+				'errors' => [
+					'Invalid file format, Please Import Excel Format File',
+				],
+			];
+			return response()->json($response);
+		}
+		$file = $r->file($attachment)->getRealPath();
+		$headers = Excel::selectSheetsByIndex(0)->load($file, function ($reader) {
+			$reader->takeRows(1);
+		})->toArray();
+		$headers[0] = array_filter($headers[0]);
+		$columns = $import_type->columns()->where('is_required', 1)->pluck('excel_column_name');
+		$mandatory_fields = $columns;
+		$missing_fields = [];
+		foreach ($mandatory_fields as $mandatory_field) {
+			if (!array_key_exists($mandatory_field, $headers[0])) {
+				$missing_fields[] = $missing_fields;
+			}
+		}
+		if (count($missing_fields) > 0) {
+			$response = [
+				'success' => false,
+				'message' => "Invalid Data, Mandatory fields are missing.",
+				'errors' => $missing_fields,
+			];
+			return response()->json($response);
+		}
+
+		$destination = $import_type->folder_path;
+		$timetamp = date('Y_m_d_H_i_s');
+		$src_file_name = $import_type->file_name . '-' . $timetamp . '-src-file.' . $attachment_extension;
+		Storage::makeDirectory($destination, 0777);
+		$r->file($attachment)->storeAs($destination, $src_file_name);
+		$output_file = $import_type->file_name . '-' . $timetamp . '-src-file';
+		Excel::create($output_file, function ($excel) use ($headers) {
+			$excel->sheet('Error Details', function ($sheet) use ($headers) {
+				$headings = array_keys($headers[0]);
+				$headings[] = 'Error No';
+				$headings[] = 'Error Details';
+				$sheet->fromArray(array($headings));
+			});
+
+		})->store('xlsx', storage_path('app/' . $destination));
+
+		$total_records = Excel::load('storage/' . $destination . $src_file_name, function ($reader) {
+			$reader->limitColumns(1);
+		})->get();
+		$total_records = count($total_records);
+
+		$import_job = new ImportJob;
+		$import_job->company_id = Auth::user()->company_id;
+		$import_job->type_id = $import_type->id;
+		$import_job->status_id = 7200; //PENDING
+		$import_job->entity_id = $r->entity_id;
+		$import_job->total_record_count = $total_records;
+		$import_job->src_file = $destination . $src_file_name;
+		$import_job->output_file = $destination . $output_file . '.xlsx';
+		$import_job->created_by_id = Auth::user()->id;
+
+		$import_job->save();
+		return response()->json(['success' => true, 'message' => 'File added to import queue successfully']);
+	}
 }
