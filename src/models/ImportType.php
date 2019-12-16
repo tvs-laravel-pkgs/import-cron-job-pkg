@@ -19,6 +19,10 @@ class ImportType extends Model {
 		'company_id',
 	];
 
+	public function columns() {
+		return $this->hasMany('Abs\ImportCronJobPkg\ImportTypeColumn', 'import_type_id');
+	}
+
 	public static function createFromObject($record_data) {
 
 		$errors = [];

@@ -14,7 +14,7 @@ use Validator;
 
 class ImportCronJob extends Model {
 	use SoftDeletes;
-	protected $table = 'ImportCronJobs';
+	protected $table = 'import_jobs';
 	protected $fillable = [
 		'code',
 		'name',
@@ -143,10 +143,10 @@ class ImportCronJob extends Model {
 
 		$destination = $import_type->folder_path;
 		$timetamp = date('Y_m_d_H_i_s');
-		$src_file_name = $import_type->file_name . '-' . $timetamp . '-src-file.' . $attachment_extension;
+		$src_file_name = $timetamp . '-src-file.' . $attachment_extension;
 		Storage::makeDirectory($destination, 0777);
 		$r->file($attachment)->storeAs($destination, $src_file_name);
-		$output_file = $import_type->file_name . '-' . $timetamp . '-src-file';
+		$output_file = $timetamp . '-output-file';
 		Excel::create($output_file, function ($excel) use ($headers) {
 			$excel->sheet('Error Details', function ($sheet) use ($headers) {
 				$headings = array_keys($headers[0]);
@@ -157,16 +157,16 @@ class ImportCronJob extends Model {
 
 		})->store('xlsx', storage_path('app/' . $destination));
 
-		$total_records = Excel::load('storage/' . $destination . $src_file_name, function ($reader) {
+		$total_records = Excel::load('storage/app/' . $destination . $src_file_name, function ($reader) {
 			$reader->limitColumns(1);
 		})->get();
 		$total_records = count($total_records);
 
-		$import_job = new ImportJob;
+		$import_job = new ImportCronJob;
 		$import_job->company_id = Auth::user()->company_id;
 		$import_job->type_id = $import_type->id;
 		$import_job->status_id = 7200; //PENDING
-		$import_job->entity_id = $r->entity_id;
+		$import_job->entity_id = $r->entity_id ? $r->entity_id : '';
 		$import_job->total_record_count = $total_records;
 		$import_job->src_file = $destination . $src_file_name;
 		$import_job->output_file = $destination . $output_file . '.xlsx';

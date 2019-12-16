@@ -1,183 +1,93 @@
 <!-- Content Wrap -->
-<div class="content-wrap cndn-wrap">
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="page-header-inner">
-            <div class="page-header-content-left">
-                <div class="page-header-content button-block">
-                    <a href="#!/ImportCronJob-pkg/ImportCronJob/list" type="button" class="btn-back btn-img"><img class="img-responsive" src="./public/theme/img/content/previous.svg" alt="Back" /></a>
-                </div><!-- Page Header Content -->
-                <div class="page-header-content title-block">
-                    <h1 class="title"><b>{{$ctrl.action}} ImportCronJob</b></h1>
-                    <p class="subtitle"><a href="#!/ImportCronJob-pkg/ImportCronJob/list">ImportCronJob List</a> / {{$ctrl.action}}</p>
-                </div><!-- Page Header Content -->
-            </div><!-- Page Header Content Left -->
-        </div><!-- Page Header Inner -->
-    </div><!-- Page Header -->
+<div class="content-wrap">
     <!-- Page Main Content -->
-    <div class="page-main-content form-content type2">
-        <form id="form" autocomplete="off">
-            <input type="hidden" name="id" value="{{$ctrl.ImportCronJob.id}}">
-            <div class="page-tab-form pb-70">
-                <div class="tab-form-wrap">
-                    <div class="tab-form-header">
-                        <div class="tab-header">
-                            <!-- Filters -->
-                            <div class="isotope-filters animated" data-animation="fadeInLeft" data-animation-delay="300">
-                                <ul class="nav nav-pills cndn-tabs">
-                                    <li class="active"><a class="filter active" data-target="#general-information" data-toggle="tab" aria-expanded="true">General Information</a></li>
-                                    <li><a data-target="#address-details" data-toggle="tab" aria-expanded="true" class="filter">Address Details</a></li>
-                                </ul>
-                            </div><!-- Filters -->
-                        </div><!-- Tab Header -->
-                    </div><!-- Tab Form Header -->
-                    <div class="tab-form-body">
-                        <div class="tab-content">
-                            <!-- TAB PANEL -->
-                            <div class="tab-pane fade in active" id="general-information" data-animation="fadeInUp" data-animation-delay="300">
-                                <div class="tab-pane-wrap">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>ImportCronJob Code <sup class="mandatory">*</sup></label>
-                                                <input type="text" class="form-control required" ng-model="$ctrl.ImportCronJob.code" name="code" placeholder="Enter ImportCronJob Code" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>ImportCronJob Name <sup class="mandatory">*</sup></label>
-                                                <input type="text" class="form-control required" ng-model="$ctrl.ImportCronJob.name" name="name" placeholder="Enter ImportCronJob Name" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>GST Number <sup class="mandatory">*</sup></label>
-                                                <input type="text" class="form-control required" ng-model="$ctrl.ImportCronJob.gst_number" name="gst_number" placeholder="Enter GST Number" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Mobile Number</label>
-                                                <input type="text" class="form-control" ng-model="$ctrl.ImportCronJob.mobile_no" name="mobile_no" placeholder="Enter Mobile Number" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Email</label>
-                                                <input type="text" class="form-control" ng-model="$ctrl.ImportCronJob.email" name="email" placeholder="Enter Email" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>ImportCronJob Group</label>
-                                                <input type="text" class="form-control" ng-model="$ctrl.ImportCronJob.cust_group" name="cust_group" placeholder="Enter ImportCronJob Group" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Dimension</label>
-                                                <input type="text" class="form-control" ng-model="$ctrl.ImportCronJob.dimension" name="dimension" placeholder="Enter Dimension" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Active Status <sup class="mandatory">*</sup></label>
-                                                <div class="tab-switch">
-                                                    <md-switch ng-model="$ctrl.switch_value" aria-label="Switch 1" ng-true-value="'Inactive'" ng-false-value="'Active'" class="md-warn">
-                                                        {{ $ctrl.switch_value }}
-                                                    </md-switch>
-                                                    <input type="hidden" name="status" value="{{$ctrl.switch_value}}">
-                                                </div>
-                                            </div><!-- Form Group -->
-                                        </div><!-- Column -->
-                                        <div class="tab-pane-footer">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <a class="btn btn-primary btn-nxt">Next</a>
-                                                </div>
+    <div class="page-main-content overflow-y-hidden">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6">
+                    <div class="page-content-inner">
+                        <!-- {{Form::open(['files' => true,"id" => "form"])}} -->
+                        <form id="import-form" method="post" enctype="multipart/form-data" ng-submit="validateImport()">
+                            <input type="hidden" name="type_id" value="2">
+                            <div class="card-center">
+                                <div class="card-boxed card-progress">
+                                    <div class="row custom-row">
+                                        <div class="col-md-12">
+                                            <div class="text-center">
+                                                <h5 class="title">Import {{$ctrl.import_type.name}}</h5>
                                             </div>
-                                        </div><!-- Tab Footer -->
+                                        </div><!-- Column -->
                                     </div><!-- Row -->
-                                </div><!-- Tab Pane Wrap -->
-                            </div><!-- Tabe Pane -->
-                            <div class="tab-pane fade" id="address-details" data-animation="fadeInUp" data-animation-delay="300">
-                                <div class="tab-pane-wrap">
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Address Line 1 <sup class="mandatory">*</sup></label>
-                                                <input type="text" class="form-control required" ng-model="$ctrl.address.address_line1" name="address_line1" placeholder="Enter Address Line 1" />
-                                            </div><!-- Feild -->
+                                        <div class="col-md-12">
+                                            <div class="card-item">
+                                                <div class="input-text form-group">
+                                                    <div class="input-group btn-file import-file">
+                                                        <input type="text" class="form-control" readonly="" placeholder="Select File" id="file_name">
+                                                        <span class="input-group-btn">
+                                                            <span class="btn btn-primary btn-circle">
+                                                                <input autocomplete="off" class="form-control" name="excel_file" id="excel_file" type="file" onchange="angular.element(this).scope().fileNameChanged(this)" ng-model="$ctrl.po_import_file">
+                                                                Browse
+                                                            </span>
+                                                            <button type="button" class="btn btn-over"><i class="icon ion-md-close progress-close" ng-click="progressClose()"></i></button>
+                                                        </span>
+                                                    </div> <!-- Input Field -->
+                                                    <span id="error_text" class="error_text"></span>
+                                                </div><!-- Field -->
+                                            </div><!-- Card Import -->
                                         </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Address Line 2</label>
-                                                <input type="text" class="form-control" ng-model="$ctrl.address.address_line2" name="address_line2" placeholder="Enter Address Line 2" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Country <sup class="mandatory">*</sup></label>
-                                                <md-select ng-model="$ctrl.address.country_id" ng-change="onSelectedCountry($ctrl.address.country_id);$ctrl.address.state_id='';$ctrl.address.city_id=''" placeholder="Select Country" data-md-container-class="selectdemoSelectHeader">
-                                                    <md-select-header class="demo-select-header ng-hide">
-                                                        <input ng-model="searchImportCronJobGroup" type="search" placeholder="Search ImportCronJob Group" class="demo-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
-                                                    </md-select-header>
-                                                    <md-optgroup label="ImportCronJob Group List">
-                                                        <md-option ng-value="country.id" ng-repeat="country in $ctrl.country_list | filter:searchTravel">{{country.name}}</md-option>
-                                                    </md-optgroup>
-                                                </md-select>
-                                                <input type="hidden" name="country_id" value='{{$ctrl.address.country_id}}' class="required">
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>State <sup class="mandatory">*</sup></label>
-                                                <md-select ng-model="$ctrl.address.state_id" ng-change="onSelectedState($ctrl.address.state_id);$ctrl.address.city_id=''" placeholder="Select State" data-md-container-class="selectdemoSelectHeader">
-                                                    <md-select-header class="demo-select-header ng-hide">
-                                                        <input ng-model="searchImportCronJobGroup" type="search" placeholder="Search ImportCronJob Group" class="demo-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
-                                                    </md-select-header>
-                                                    <md-optgroup label="">
-                                                        <md-option ng-value="state.id" ng-repeat="state in $ctrl.state_list | filter:searchTravel">{{state.name}}</md-option>
-                                                    </md-optgroup>
-                                                </md-select>
-                                                <input type="hidden" name="state_id" value='{{$ctrl.address.state_id}}' class="required">
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>City <sup class="mandatory">*</sup></label>
-                                                <md-select ng-model="$ctrl.address.city_id" placeholder="Select City" data-md-container-class="selectdemoSelectHeader">
-                                                    <md-select-header class="demo-select-header ng-hide">
-                                                        <input ng-model="searchImportCronJobGroup" type="search" placeholder="Search ImportCronJob Group" class="demo-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
-                                                    </md-select-header>
-                                                    <md-optgroup label="">
-                                                        <md-option ng-value="city.id" ng-repeat="city in $ctrl.city_list | filter:searchTravel">{{city.name}}</md-option>
-                                                    </md-optgroup>
-                                                </md-select>
-                                                <input type="hidden" name="city_id" value='{{$ctrl.address.city_id}}' class="required">
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="col-md-3">
-                                            <div class="input-text form-group">
-                                                <label>Pincode<sup class="mandatory">*</sup></label>
-                                                <input type="text" class="form-control required" ng-model="$ctrl.address.pincode" name="pincode" placeholder="Enter Pincode" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
-                                            </div><!-- Feild -->
-                                        </div><!-- Column -->
-                                        <div class="tab-pane-footer">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <a class="btn btn-secondary btn-prev">Previous</a>
-                                                    <button type="submit" id="submit" class="btn btn-primary">Submit</button>
-                                                </div>
-                                            </div>
-                                        </div><!-- Tab Footer -->
                                     </div><!-- Row -->
-                                </div><!-- Tab Pane Wrap -->
-                            </div><!-- Tabe Pane -->
-                        </div><!-- Tab Content -->
-                    </div><!-- Tab Form Body -->
-                </div><!-- Tab Form Wrap -->
-            </div><!-- Page Form -->
-        </form>
+                                    <div class="row custom-row">
+                                        <div class="col-md-12">
+                                            <ul class="card-button">
+                                                <li class="text-left">
+                                                    <a id="po_item_template" class="btn btn-border" href="{{po_import_download_template_url}}" download><i class="icon ion-md-download"></i>Download Template</a>
+                                                </li>
+                                                <li class="text-right">
+                                                    <input type="submit" class="btn btn-upload" id="upload" value="Upload">
+                                                </li>
+                                            </ul>
+                                        </div><!-- Column -->
+                                    </div><!-- Row -->
+                                </div><!-- Card Boxed -->
+                            </div>
+                            <!--   {{Form::close()}} -->
+                        </form>
+                        <div class="card-transition">
+                            <div class="card-boxed">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="skills" data-percent="0%" id="import_progress">
+                                            <span>0% Completed</span>
+                                            <div class="skillbar" style="width:0%;"></div>
+                                        </div><!-- Skills -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-6">
+                                        <div class="card-block">
+                                            <p class="color-secondary-light">Total Records : <span id='total_count'>Calculating</span></p>
+                                        </div><!-- Card Block -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-6">
+                                        <div class="card-block">
+                                            <p class="color-green">New Records : <span id='new_count'>0</span></p>
+                                        </div><!-- Card Block -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-12">
+                                        <div class="card-block">
+                                            <p class="color-red">Error Records : <span id='error_count'>0</span></p>
+                                        </div><!-- Card Block -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-12">
+                                        <div class="text-center" style="margin-bottom: 20px;">
+                                            <a type="button" class="btn progress-close" ng-click="progressClose()">Close</a>
+                                        </div>
+                                    </div>
+                                </div><!-- Row -->
+                            </div><!-- Card Boxed -->
+                        </div><!-- Card Transition -->
+                    </div><!-- Page Content Inner -->
+                </div><!-- Col Main -->
+            </div><!-- Row -->
+        </div><!-- Container -->
     </div><!-- Page Main Content -->
 </div><!-- Content Wrap -->

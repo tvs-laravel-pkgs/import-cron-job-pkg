@@ -1,262 +1,125 @@
-app.component('ImportCronJobList', {
-    templateUrl: ImportCronJob_list_template_url,
+app.config(['$routeProvider', function($routeProvider) {
+
+    $routeProvider.
+    //ImportCronJob
+    when('/import-cron-job-pkg/import-job/list', {
+        template: '<import-cron-job-list></import-cron-job-list>',
+        title: 'Import Cron Jobs',
+    }).
+    when('/import-cron-job-pkg/import-job/form', {
+        template: '<import-cron-job-form></import-cron-job-form>',
+        title: 'Add Import Cron Job',
+    })
+}]);
+
+app.component('importCronJobList', {
+    templateUrl: import_cron_job_list_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {
-        $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
-        var table_scroll;
-        table_scroll = $('.page-main-content').height() - 37;
-        var dataTable = $('#ImportCronJobs_list').DataTable({
-            "dom": cndn_dom_structure,
+
+        var dataTable = $('#table').DataTable({
+            "dom": dom_structure,
             "language": {
-                // "search": "",
-                // "searchPlaceholder": "Search",
-                "lengthMenu": "Rows _MENU_",
+                "search": "",
+                "lengthMenu": "Rows Per Page _MENU_",
                 "paginate": {
                     "next": '<i class="icon ion-ios-arrow-forward"></i>',
                     "previous": '<i class="icon ion-ios-arrow-back"></i>'
                 },
             },
+            stateSave: true,
             pageLength: 10,
             processing: true,
-            stateSaveCallback: function(settings, data) {
-                localStorage.setItem('CDataTables_' + settings.sInstance, JSON.stringify(data));
-            },
-            stateLoadCallback: function(settings) {
-                var state_save_val = JSON.parse(localStorage.getItem('CDataTables_' + settings.sInstance));
-                if (state_save_val) {
-                    $('#search_ImportCronJob').val(state_save_val.search.search);
-                }
-                return JSON.parse(localStorage.getItem('CDataTables_' + settings.sInstance));
-            },
             serverSide: true,
             paging: true,
-            stateSave: true,
             ordering: false,
-            scrollY: table_scroll + "px",
-            scrollCollapse: true,
             ajax: {
-                url: laravel_routes['getImportCronJobList'],
+                url: laravel_routes['getImportJobList'],
                 type: "GET",
                 dataType: "json",
-                data: function(d) {
-                    d.ImportCronJob_code = $('#ImportCronJob_code').val();
-                    d.ImportCronJob_name = $('#ImportCronJob_name').val();
-                    d.mobile_no = $('#mobile_no').val();
-                    d.email = $('#email').val();
-                },
+                data: function(d) {},
             },
 
             columns: [
-                { data: 'action', class: 'action', name: 'action', searchable: false },
-                { data: 'code', name: 'ImportCronJobs.code' },
-                { data: 'name', name: 'ImportCronJobs.name' },
-                { data: 'mobile_no', name: 'ImportCronJobs.mobile_no' },
-                { data: 'email', name: 'ImportCronJobs.email' },
+                // { data: 'action', searchable: false, class: 'action1' },
+                { data: 'created', name: 'import_jobs.created_at', searchable: true },
+                { data: 'type', name: 'type.name', searchable: true },
+                { data: 'error_details', searchable: false },
+                { data: 'status', name: 'status.name', searchable: true },
+                { data: 'entity', searchable: false },
+                { data: 'total_record_count', searchable: false },
+                { data: 'processed_count', searchable: false },
+                { data: 'remaining_count', searchable: false },
+                { data: 'new_count', searchable: false },
+                { data: 'updated_count', searchable: false },
+                { data: 'error_count', searchable: false },
+                { data: 'src_file', searchable: false },
+                { data: 'output_file', searchable: false },
+                { data: 'created_by', name: 'cb.name', searchable: true },
             ],
+            "initComplete": function(settings, json) {
+                $('.dataTables_length select').select2();
+                $('#modal-loading').modal('hide');
+            },
             "infoCallback": function(settings, start, end, max, total, pre) {
-                $('#table_info').html(total)
-                $('.foot_info').html('Showing ' + start + ' to ' + end + ' of ' + max + ' entries')
+                $('#table_info').html(max)
             },
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
             }
         });
-        $('.dataTables_length select').select2();
 
-        $scope.clear_search = function() {
-            $('#search_ImportCronJob').val('');
-            $('#ImportCronJobs_list').DataTable().search('').draw();
-        }
+        $('.page-header-content .display-inline-block .data-table-title').html('Import Jobs <span class="badge badge-secondary" id="table_info">0</span>');
+        $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
+        $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
 
-        var dataTables = $('#ImportCronJobs_list').dataTable();
-        $("#search_ImportCronJob").keyup(function() {
-            dataTables.fnFilter(this.value);
+        /*$('.add_new_button').html(
+            '<button id="refresh-btn" type="button" class="btn btn-secondary" ng-click="refreshImportJob()">' +
+            'Refresh' +
+            '</button>'
+        );*/
+
+        $('.btn-add-close').on("click", function() {
+            $('#table').DataTable().search('').draw();
         });
 
-        //DELETE
-        $scope.deleteImportCronJob = function($id) {
-            $('#ImportCronJob_id').val($id);
-        }
-        $scope.deleteConfirm = function() {
-            $id = $('#ImportCronJob_id').val();
-            $http.get(
-                ImportCronJob_delete_data_url + '/' + $id,
-            ).then(function(response) {
-                if (response.data.success) {
-                    $noty = new Noty({
-                        type: 'success',
-                        layout: 'topRight',
-                        text: 'ImportCronJob Deleted Successfully',
-                    }).show();
-                    setTimeout(function() {
-                        $noty.close();
-                    }, 3000);
-                    $('#ImportCronJobs_list').DataTable().ajax.reload(function(json) {});
-                    $location.path('/ImportCronJob-pkg/ImportCronJob/list');
-                }
-            });
-        }
-
-        //FOR FILTER
-        $('#ImportCronJob_code').on('keyup', function() {
-            dataTables.fnFilter();
+        $('.btn-refresh, #refresh-btn').on("click", function() {
+            $('#table').DataTable().ajax.reload();
         });
-        $('#ImportCronJob_name').on('keyup', function() {
-            dataTables.fnFilter();
-        });
-        $('#mobile_no').on('keyup', function() {
-            dataTables.fnFilter();
-        });
-        $('#email').on('keyup', function() {
-            dataTables.fnFilter();
-        });
-        $scope.reset_filter = function() {
-            $("#ImportCronJob_name").val('');
-            $("#ImportCronJob_code").val('');
-            $("#mobile_no").val('');
-            $("#email").val('');
-            dataTables.fnFilter();
-        }
-
-        $rootScope.loading = false;
     }
+
 });
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------
-app.component('ImportCronJobForm', {
-    templateUrl: ImportCronJob_form_template_url,
+app.component('importCronJobForm', {
+    templateUrl: import_cron_job_from_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope) {
-        get_form_data_url = typeof($routeParams.id) == 'undefined' ? ImportCronJob_get_form_data_url : ImportCronJob_get_form_data_url + '/' + $routeParams.id;
+        // get_form_data_url = typeof($routeParams.id) == 'undefined' ? ImportCronJob_get_form_data_url : ImportCronJob_get_form_data_url + '/' + $routeParams.id;
+        get_form_data_url = '';
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
-        $http.get(
-            get_form_data_url
-        ).then(function(response) {
-            // console.log(response);
-            self.ImportCronJob = response.data.ImportCronJob;
-            self.address = response.data.address;
-            self.country_list = response.data.country_list;
-            self.action = response.data.action;
-            $rootScope.loading = false;
-            if (self.action == 'Edit') {
-                $scope.onSelectedCountry(self.address.country_id);
-                $scope.onSelectedState(self.address.state_id);
-                if (self.ImportCronJob.deleted_at) {
-                    self.switch_value = 'Inactive';
-                } else {
-                    self.switch_value = 'Active';
-                }
-            } else {
-                self.switch_value = 'Active';
-                self.state_list = [{ 'id': '', 'name': 'Select State' }];
-                self.city_list = [{ 'id': '', 'name': 'Select City' }];
-            }
-        });
+        // $http.get(
+        //     get_form_data_url
+        // ).then(function(response) {
+        //     self.ImportCronJob = response.data.ImportCronJob;
+        //     $rootScope.loading = false;
+        // });
 
         /* Tab Funtion */
-        $('.btn-nxt').on("click", function() {
-            $('.cndn-tabs li.active').next().children('a').trigger("click");
-            tabPaneFooter();
-        });
-        $('.btn-prev').on("click", function() {
-            $('.cndn-tabs li.active').prev().children('a').trigger("click");
-            tabPaneFooter();
-        });
-        $('.btn-pills').on("click", function() {
-            tabPaneFooter();
-        });
-        $scope.btnNxt = function() {}
-        $scope.prev = function() {}
 
-        //SELECT STATE BASED COUNTRY
-        $scope.onSelectedCountry = function(id) {
-            ImportCronJob_get_state_by_country = vendor_get_state_by_country;
-            $http.post(
-                ImportCronJob_get_state_by_country, { 'country_id': id }
-            ).then(function(response) {
-                // console.log(response);
-                self.state_list = response.data.state_list;
-            });
-        }
-
-        //SELECT CITY BASED STATE
-        $scope.onSelectedState = function(id) {
-            ImportCronJob_get_city_by_state = vendor_get_city_by_state
-            $http.post(
-                ImportCronJob_get_city_by_state, { 'state_id': id }
-            ).then(function(response) {
-                // console.log(response);
-                self.city_list = response.data.city_list;
-            });
-        }
-
-        var form_id = '#form';
+        var form_id = '#import-form';
         var v = jQuery(form_id).validate({
             ignore: '',
             rules: {
-                'code': {
+                'excel_file': {
                     required: true,
-                    minlength: 3,
-                    maxlength: 255,
-                },
-                'name': {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 255,
-                },
-                'cust_group': {
-                    maxlength: 100,
-                },
-                'gst_number': {
-                    required: true,
-                    maxlength: 100,
-                },
-                'dimension': {
-                    maxlength: 50,
-                },
-                'address_line1': {
-                    minlength: 3,
-                    maxlength: 255,
-                },
-                'address_line2': {
-                    minlength: 3,
-                    maxlength: 255,
-                },
-                'pincode': {
-                    required: true,
-                    minlength: 6,
-                    maxlength: 6,
                 },
             },
             messages: {
                 'code': {
                     maxlength: 'Maximum of 255 charaters',
-                },
-                'name': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
-                'cust_group': {
-                    maxlength: 'Maximum of 100 charaters',
-                },
-                'dimension': {
-                    maxlength: 'Maximum of 50 charaters',
-                },
-                'gst_number': {
-                    maxlength: 'Maximum of 25 charaters',
-                },
-                'email': {
-                    maxlength: 'Maximum of 100 charaters',
-                },
-                'address_line1': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
-                'address_line2': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
-                'pincode': {
-                    maxlength: 'Maximum of 6 charaters',
                 },
             },
             invalidHandler: function(event, validator) {
@@ -281,48 +144,23 @@ app.component('ImportCronJobForm', {
                     })
                     .done(function(res) {
                         if (res.success == true) {
-                            $noty = new Noty({
-                                type: 'success',
-                                layout: 'topRight',
-                                text: res.message,
-                            }).show();
-                            setTimeout(function() {
-                                $noty.close();
-                            }, 3000);
-                            $location.path('/ImportCronJob-pkg/ImportCronJob/list');
+                            custom_noty('success', res.message);
+                            $location.path('/import-cron-job-pkg/import-job/list');
                             $scope.$apply();
                         } else {
-                            if (!res.success == true) {
+                            if (!res.success) {
                                 $('#submit').button('reset');
                                 var errors = '';
                                 for (var i in res.errors) {
                                     errors += '<li>' + res.errors[i] + '</li>';
                                 }
-                                $noty = new Noty({
-                                    type: 'error',
-                                    layout: 'topRight',
-                                    text: errors
-                                }).show();
-                                setTimeout(function() {
-                                    $noty.close();
-                                }, 3000);
-                            } else {
-                                $('#submit').button('reset');
-                                $location.path('/ImportCronJob-pkg/ImportCronJob/list');
-                                $scope.$apply();
+                                custom_noty('error', errors);
                             }
                         }
                     })
                     .fail(function(xhr) {
                         $('#submit').button('reset');
-                        $noty = new Noty({
-                            type: 'error',
-                            layout: 'topRight',
-                            text: 'Something went wrong at server',
-                        }).show();
-                        setTimeout(function() {
-                            $noty.close();
-                        }, 3000);
+                        custom_noty('error', 'Something went wrong at server');
                     });
             }
         });

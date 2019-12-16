@@ -55,4 +55,8 @@ class ImportJobController extends Controller {
 			->make(true);
 	}
 
+	public function saveImportCronJob(Request $r) {
+		return ImportCronJob::createImportJob($r);
+	}
+
 }
