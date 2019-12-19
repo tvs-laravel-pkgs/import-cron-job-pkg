@@ -6,7 +6,7 @@ app.config(['$routeProvider', function($routeProvider) {
         template: '<import-cron-job-list></import-cron-job-list>',
         title: 'Import Cron Jobs',
     }).
-    when('/import-cron-job-pkg/import-job/form', {
+    when('/import-cron-job-pkg/import-job/form/:id', {
         template: '<import-cron-job-form></import-cron-job-form>',
         title: 'Add Import Cron Job',
     })
