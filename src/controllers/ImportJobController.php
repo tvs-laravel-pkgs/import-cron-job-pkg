@@ -64,7 +64,7 @@ class ImportJobController extends Controller {
 			})
 			->addColumn('error_details', function ($import_jobs) {
 				$color = "color-red";
-				return '<span class="' . $color . '">' . wordwrap($import_jobs->error_details, 10, "\n", true) . '</span>';
+				return '<span class="' . $color . '">' . wordwrap($import_jobs->error_details, 20, "<br>", true) . '</span>';
 			})
 			->addColumn('status', function ($import_jobs) {
 				//PENDING
@@ -95,4 +95,10 @@ class ImportJobController extends Controller {
 		return ImportCronJob::createImportJob($r);
 	}
 
+	public function deleteImportJob($id) {
+		$delete_status = ImportCronJob::where('id', $id)->forceDelete();
+		if ($delete_status) {
+			return response()->json(['success' => true]);
+		}
+	}
 }
