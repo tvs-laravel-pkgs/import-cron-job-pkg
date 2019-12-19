@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use PHPExcel_IOFactory;
 use Validator;
 
 class ImportCronJob extends Model {
@@ -24,6 +25,10 @@ class ImportCronJob extends Model {
 		'email',
 		'company_id',
 	];
+
+	public function type() {
+		return $this->belongsTo('Abs\ImportCronJobPkg\ImportType', 'type_id');
+	}
 
 	public static function createFromObject($record_data) {
 
@@ -120,15 +125,26 @@ class ImportCronJob extends Model {
 			return response()->json($response);
 		}
 		$file = $r->file($attachment)->getRealPath();
-		$headers = Excel::selectSheetsByIndex(0)->load($file, function ($reader) {
-			$reader->takeRows(1);
-		})->toArray();
-		$headers[0] = array_filter($headers[0]);
+
+		$objPHPExcel = PHPExcel_IOFactory::load($file);
+		$sheet = $objPHPExcel->getSheet(0);
+		$header = $sheet->rangeToArray('A1:F1', NULL, TRUE, FALSE);
+		$header = $header[0];
+
+		foreach ($header as $key => $column) {
+			$empty_columns = [];
+			if ($column == NULL) {
+				$empty_columns[] = $key;
+				unset($header[$key]);
+			}
+		}
+
 		$columns = $import_type->columns()->where('is_required', 1)->pluck('excel_column_name');
 		$mandatory_fields = $columns;
+		// dd($mandatory_fields, $header);
 		$missing_fields = [];
 		foreach ($mandatory_fields as $mandatory_field) {
-			if (!array_key_exists($mandatory_field, $headers[0])) {
+			if (!in_array($mandatory_field, $header)) {
 				$missing_fields[] = $missing_fields;
 			}
 		}
@@ -141,22 +157,25 @@ class ImportCronJob extends Model {
 			return response()->json($response);
 		}
 
-		$destination = $import_type->folder_path;
+		//STORING UPLOADED EXCEL FILE
+		$destination = str_replace('app/', '', $import_type->folder_path);
 		$timetamp = date('Y_m_d_H_i_s');
 		$src_file_name = $timetamp . '-src-file.' . $attachment_extension;
 		Storage::makeDirectory($destination, 0777);
 		$r->file($attachment)->storeAs($destination, $src_file_name);
-		$output_file = $timetamp . '-output-file';
-		Excel::create($output_file, function ($excel) use ($headers) {
-			$excel->sheet('Error Details', function ($sheet) use ($headers) {
-				$headings = array_keys($headers[0]);
-				$headings[] = 'Error No';
-				$headings[] = 'Error Details';
-				$sheet->fromArray(array($headings));
-			});
 
+		//CREATING & STORING OUTPUT EXCEL FILE
+		$output_file = $timetamp . '-output-file';
+		Excel::create($output_file, function ($excel) use ($header) {
+			$excel->sheet('Error Details', function ($sheet) use ($header) {
+				// $headings = array_keys($header);
+				// $headings[] = 'Error No';
+				// $headings[] = 'Error Details';
+				// $sheet->fromArray(array($headings));
+			});
 		})->store('xlsx', storage_path('app/' . $destination));
 
+		//CALCULATING TOTAL RECORDS
 		$total_records = Excel::load('storage/app/' . $destination . $src_file_name, function ($reader) {
 			$reader->limitColumns(1);
 		})->get();
