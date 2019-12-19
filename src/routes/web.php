@@ -5,6 +5,6 @@ Route::group(['namespace' => 'Abs\ImportCronJobPkg', 'middleware' => ['web', 'au
 	Route::post('/import-jobs/save', 'ImportJobController@saveImportCronJob')->name('saveImportCronJob');
 	Route::get('/import-job/delete/{id}', 'ImportJobController@deleteImportJob')->name('deleteImportJob');
 
-	Route::get('/import-job-cron/run', 'ImportJobCronController@executeImportJob')->name('executeImportJob');
+	Route::get('/import-job-cron/execute', 'ImportJobCronController@executeImportJob')->name('executeImportJob');
 
 });
