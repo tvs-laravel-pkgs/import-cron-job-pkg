@@ -35,18 +35,18 @@ app.component('importCronJobList', {
             paging: true,
             ordering: false,
             ajax: {
-                url: laravel_routes['getImportJobList'],
+                url: laravel_routes['getImportCronJobList'],
                 type: "GET",
                 dataType: "json",
                 data: function(d) {},
             },
 
             columns: [
-                // { data: 'action', searchable: false, class: 'action1' },
+                { data: 'action', class: 'action', searchable: false },
                 { data: 'created', name: 'import_jobs.created_at', searchable: true },
                 { data: 'type', name: 'type.name', searchable: true },
-                { data: 'error_details', searchable: false },
                 { data: 'status', name: 'status.name', searchable: true },
+                { data: 'error_details', searchable: false, width: '50px' },
                 { data: 'entity', searchable: false },
                 { data: 'total_record_count', searchable: false },
                 { data: 'processed_count', searchable: false },
@@ -63,7 +63,7 @@ app.component('importCronJobList', {
                 $('#modal-loading').modal('hide');
             },
             "infoCallback": function(settings, start, end, max, total, pre) {
-                $('#table_info').html(max)
+                $('#table_info').html(total)
             },
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
@@ -79,7 +79,9 @@ app.component('importCronJobList', {
             'Refresh' +
             '</button>'
         );*/
-
+        setInterval(function() {
+            $('#table').DataTable().ajax.reload();
+        }, 600000);
         $('.btn-add-close').on("click", function() {
             $('#table').DataTable().search('').draw();
         });
@@ -87,26 +89,49 @@ app.component('importCronJobList', {
         $('.btn-refresh, #refresh-btn').on("click", function() {
             $('#table').DataTable().ajax.reload();
         });
-    }
 
+        $scope.deleteImportJob = function($id) {
+            $('#import_job_id').val($id);
+        }
+        $scope.deleteConfirm = function() {
+            $id = $('#import_job_id').val();
+            $http.get(
+                import_cron_job_delete + '/' + $id,
+            ).then(function(response) {
+                if (response.data.success) {
+                    custom_noty('success', 'Import job Deleted Successfully');
+                    $('#table').DataTable().ajax.reload(function(json) {});
+                    $location.path('/import-cron-job-pkg/import-job/list');
+                }
+            });
+        }
+    }
 });
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------
 app.component('importCronJobForm', {
     templateUrl: import_cron_job_from_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope) {
-        // get_form_data_url = typeof($routeParams.id) == 'undefined' ? ImportCronJob_get_form_data_url : ImportCronJob_get_form_data_url + '/' + $routeParams.id;
-        get_form_data_url = '';
+        get_form_data_url = import_cron_job_from_data_check + '/' + $routeParams.id;
+        if ($routeParams.id != 2) {
+            $location.path('/page-not-found')
+            // $scope.$apply()
+        }
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
-        self.coupon_import_download_template_url = coupon_import_download_template_url;
-        // $http.get(
-        //     get_form_data_url
-        // ).then(function(response) {
-        //     self.ImportCronJob = response.data.ImportCronJob;
-        //     $rootScope.loading = false;
-        // });
+        self.import_cron_job_template_file_url = import_cron_job_template_file_url;
+        $http.get(
+            get_form_data_url
+        ).then(function(response) {
+            console.log(response);
+            self.impoty_type = response.data.impoty_type;
+            if (self.impoty_type.permission != 'import-coupon') {
+                $location.path('/page-not-found')
+                $scope.$apply()
+            }
+            // $rootScope.loading = false;
+        });
 
         /* Tab Funtion */
         var form_id = '#import-form';
@@ -119,7 +144,7 @@ app.component('importCronJobForm', {
             },
             submitHandler: function(form) {
                 let formData = new FormData($(form_id)[0]);
-                $('#submit').button('loading');
+                $('#upload').button('loading');
                 $.ajax({
                         url: laravel_routes['saveImportCronJob'],
                         method: "POST",
@@ -134,7 +159,7 @@ app.component('importCronJobForm', {
                             $scope.$apply();
                         } else {
                             if (!res.success) {
-                                $('#submit').button('reset');
+                                $('#upload').button('reset');
                                 var errors = '';
                                 for (var i in res.errors) {
                                     errors += '<li>' + res.errors[i] + '</li>';
@@ -144,7 +169,7 @@ app.component('importCronJobForm', {
                         }
                     })
                     .fail(function(xhr) {
-                        $('#submit').button('reset');
+                        $('#upload').button('reset');
                         custom_noty('error', 'Something went wrong at server');
                     });
             }
