@@ -100,6 +100,7 @@ app.component('importCronJobForm', {
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
+        self.coupon_import_download_template_url = coupon_import_download_template_url;
         // $http.get(
         //     get_form_data_url
         // ).then(function(response) {
@@ -108,7 +109,6 @@ app.component('importCronJobForm', {
         // });
 
         /* Tab Funtion */
-
         var form_id = '#import-form';
         var v = jQuery(form_id).validate({
             ignore: '',
@@ -116,21 +116,6 @@ app.component('importCronJobForm', {
                 'excel_file': {
                     required: true,
                 },
-            },
-            messages: {
-                'code': {
-                    maxlength: 'Maximum of 255 charaters',
-                },
-            },
-            invalidHandler: function(event, validator) {
-                $noty = new Noty({
-                    type: 'error',
-                    layout: 'topRight',
-                    text: 'You have errors,Please check all tabs'
-                }).show();
-                setTimeout(function() {
-                    $noty.close();
-                }, 3000)
             },
             submitHandler: function(form) {
                 let formData = new FormData($(form_id)[0]);
