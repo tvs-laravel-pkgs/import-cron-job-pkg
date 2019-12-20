@@ -15,7 +15,7 @@ class ImportJobController extends Controller {
 	public function __construct() {
 	}
 
-	public function getImportJobList(Request $request) {
+	public function getImportCronJobList(Request $request) {
 		$import_jobs = ImportCronJob::
 			join('import_types as type', 'type.id', '=', 'import_jobs.type_id')
 			->join('configs as status', 'status.id', '=', 'import_jobs.status_id')
