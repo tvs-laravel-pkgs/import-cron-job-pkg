@@ -46,7 +46,7 @@ app.component('importCronJobList', {
                 { data: 'created', name: 'import_jobs.created_at', searchable: true },
                 { data: 'type', name: 'type.name', searchable: true },
                 { data: 'status', name: 'status.name', searchable: true },
-                { data: 'error_details', searchable: false, width: '50px' },
+                { data: 'error_details', searchable: false },
                 { data: 'entity', searchable: false },
                 { data: 'total_record_count', searchable: false },
                 { data: 'processed_count', searchable: false },
@@ -79,9 +79,23 @@ app.component('importCronJobList', {
             'Refresh' +
             '</button>'
         );*/
+
+        //TOOLTIP
+        $(document).on('mouseover', ".table-attchment-view", function() {
+            var $this = $(this);
+            if (this.offsetWidth <= this.scrollWidth && !$this.attr('title')) {
+                $this.tooltip({
+                    title: $this.children(".table-attchment-view-name").text(),
+                    // title: $this.attr('title'),
+                    placement: "top"
+                });
+                $this.tooltip('show');
+            }
+        });
+
         setInterval(function() {
             $('#table').DataTable().ajax.reload();
-        }, 600000);
+        }, 60000);
         $('.btn-add-close').on("click", function() {
             $('#table').DataTable().search('').draw();
         });

@@ -16,11 +16,11 @@ class ImportJobController extends Controller {
 	}
 
 	public function getImportCronJobList(Request $request) {
-
 		$import_jobs = ImportCronJob::
 			join('configs as type', 'type.id', '=', 'import_jobs.type_id')
 			->join('configs as status', 'status.id', '=', 'import_jobs.status_id')
 			->join('users as cb', 'cb.id', '=', 'import_jobs.created_by_id')
+			->join('suppliers', 'suppliers.id', 'cb.entity_id')
 			->select(
 				DB::raw('DATE_FORMAT(import_jobs.created_at,"%d/%m/%Y %h:%i %p") as created'),
 				'type.name as type',
@@ -37,13 +37,15 @@ class ImportJobController extends Controller {
 				'import_jobs.src_file',
 				'import_jobs.output_file',
 				'import_jobs.error_details',
-				'cb.name as created_by'
+				// 'cb.name as created_by',
+				'suppliers.name as created_by'
 			)
 			->where('import_jobs.company_id', Auth::user()->company_id)
+			->where('cb.user_type_id', 8)
 			->orderBy('import_jobs.created_at', 'DESC')
 		;
 
-		if (!Entrust::can('view-all-import-jobs')) {
+		if (!Entrust::can('view-all-import-cron-job')) {
 			$import_jobs = $import_jobs->where('import_jobs.created_by_id', Auth::id());
 		}
 
@@ -64,7 +66,9 @@ class ImportJobController extends Controller {
 			})
 			->addColumn('error_details', function ($import_jobs) {
 				$color = "color-red";
-				return '<span class="' . $color . '">' . wordwrap($import_jobs->error_details, 20, "<br>", true) . '</span>';
+				$error_details = $import_jobs->error_details;
+				// return '<a href="#!" data-toggle="tooltip" title=' . $error_details . ' class="' . $color . '">' . (strlen($error_details) > 20) ? substr($error_details, 0, 20) . '...' : $error_details . '</a>';
+				return '<span class="' . $color . '">' . wordwrap($error_details, 30, "<br>", true) . '</span>';
 			})
 			->addColumn('status', function ($import_jobs) {
 				//PENDING
@@ -87,7 +91,6 @@ class ImportJobController extends Controller {
 
 	public function getImportJobFormData($id) {
 		$this->data['impoty_type'] = $impoty_type = ImportType::find($id);
-
 		return response()->json($this->data);
 	}
 
