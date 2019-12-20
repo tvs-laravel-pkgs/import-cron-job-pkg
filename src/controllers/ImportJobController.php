@@ -15,10 +15,10 @@ class ImportJobController extends Controller {
 	public function __construct() {
 	}
 
-	public function getImportCronJobList(Request $request) {
+	public function getImportJobList(Request $request) {
 
 		$import_jobs = ImportCronJob::
-			join('configs as type', 'type.id', '=', 'import_jobs.type_id')
+			join('import_types as type', 'type.id', '=', 'import_jobs.type_id')
 			->join('configs as status', 'status.id', '=', 'import_jobs.status_id')
 			->join('users as cb', 'cb.id', '=', 'import_jobs.created_by_id')
 			->select(
@@ -46,6 +46,10 @@ class ImportJobController extends Controller {
 		}
 
 		return Datatables::of($import_jobs)
+			->addColumn('error_details', function ($import_job) {
+				$color = "color-red";
+				return '<span class="' . $color . '">' . $import_job->error_details . '</span>';
+			})
 			->addColumn('src_file', function ($import_job) {
 				return '<a href="storage/app/' . $import_job->src_file . '">Download</a>';
 			})
