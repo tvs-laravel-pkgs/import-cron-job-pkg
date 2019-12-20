@@ -145,7 +145,7 @@ class ImportCronJob extends Model {
 		$missing_fields = [];
 		foreach ($mandatory_fields as $mandatory_field) {
 			if (!in_array($mandatory_field, $header)) {
-				$missing_fields[] = $missing_fields;
+				$missing_fields[] = $mandatory_field;
 			}
 		}
 		if (count($missing_fields) > 0) {

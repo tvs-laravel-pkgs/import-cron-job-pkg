@@ -10,13 +10,12 @@ class ImportType extends Model {
 	protected $table = 'import_types';
 	public $timestamps = false;
 	protected $fillable = [
-		'code',
 		'name',
-		'cust_group',
-		'dimension',
-		'mobile_no',
-		'email',
-		'company_id',
+		'folder_path',
+		'file_name',
+		'action',
+		'permission',
+		'template_file',
 	];
 
 	public function columns() {
