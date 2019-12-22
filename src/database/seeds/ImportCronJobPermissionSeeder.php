@@ -16,7 +16,7 @@ class ImportCronJobPermissionSeeder extends Seeder {
 				'display_order' => 10,
 				'parent_id' => null,
 				'name' => 'import-cron-jobs',
-				'display_name' => 'Import Cron Jobs',
+				'display_name' => 'Import Status',
 			],
 			10201 => [
 				'display_order' => 1,
