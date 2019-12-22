@@ -93,22 +93,22 @@ class ImportCronJob extends Model {
 		]);
 
 		if ($validator->fails()) {
-			return response()->json([
+			return [
 				'success' => false,
 				'error' => 'Validation Error',
 				'errors' => $validator->errors()->all(),
-			]);
+			];
 		}
 
 		$import_type = ImportType::find($r->type_id);
 		if (!$import_type) {
-			return response()->json([
+			return [
 				'success' => false,
 				'error' => 'Validation Error',
 				'errors' => [
 					'Invalid Import Type',
 				],
-			]);
+			];
 		}
 
 		ini_set('max_execution_time', 0);
@@ -122,7 +122,7 @@ class ImportCronJob extends Model {
 					'Invalid file format, Please Import Excel Format File',
 				],
 			];
-			return response()->json($response);
+			return $response;
 		}
 		$file = $r->file($attachment)->getRealPath();
 
@@ -154,7 +154,7 @@ class ImportCronJob extends Model {
 				'message' => "Invalid Data, Mandatory fields are missing.",
 				'errors' => $missing_fields,
 			];
-			return response()->json($response);
+			return $response;
 		}
 
 		//STORING UPLOADED EXCEL FILE
@@ -192,6 +192,21 @@ class ImportCronJob extends Model {
 		$import_job->created_by_id = Auth::user()->id;
 
 		$import_job->save();
-		return response()->json(['success' => true, 'message' => 'File added to import queue successfully']);
+		return [
+			'success' => true,
+			'message' => 'File added to import queue successfully',
+		];
+	}
+
+	public function incrementNew() {
+		$this->new_count++;
+		$this->remaining_count--;
+		$this->processed_count++;
+	}
+
+	public function incrementError() {
+		$this->error_count++;
+		$this->remaining_count--;
+		$this->processed_count++;
 	}
 }
