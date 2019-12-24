@@ -9,7 +9,7 @@ use Excel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
 use Validator;
 
@@ -161,7 +161,7 @@ class ImportCronJob extends Model {
 		$destination = str_replace('app/', '', $import_type->folder_path);
 		$timetamp = date('Y_m_d_H_i_s');
 		$src_file_name = $timetamp . '-src-file.' . $attachment_extension;
-		Storage::makeDirectory($destination, 0777);
+		// Storage::makeDirectory($destination, 0777);
 		$r->file($attachment)->storeAs($destination, $src_file_name);
 
 		//CREATING & STORING OUTPUT EXCEL FILE
