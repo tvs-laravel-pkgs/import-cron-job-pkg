@@ -157,23 +157,22 @@ class ImportCronJob extends Model {
 			return $response;
 		}
 
-		//STORING UPLOADED EXCEL FILE
-		$destination = str_replace('app/', '', $import_type->folder_path);
-		$timetamp = date('Y_m_d_H_i_s');
-		$src_file_name = $timetamp . '-src-file.' . $attachment_extension;
-		// Storage::makeDirectory($destination, 0777);
-		$r->file($attachment)->storeAs($destination, $src_file_name);
+		$import_job = new ImportCronJob;
+		$import_job->company_id = Auth::user()->company_id;
+		$import_job->type_id = $import_type->id;
+		$import_job->status_id = 7200; //PENDING
+		$import_job->entity_id = $r->entity_id ? $r->entity_id : '';
+		$import_job->total_record_count = 0;
+		$import_job->src_file = '';
+		$import_job->output_file = '';
+		$import_job->created_by_id = Auth::user()->id;
+		$import_job->save();
 
-		//CREATING & STORING OUTPUT EXCEL FILE
-		$output_file = $timetamp . '-output-file';
-		Excel::create($output_file, function ($excel) use ($header) {
-			$excel->sheet('Error Details', function ($sheet) use ($header) {
-				// $headings = array_keys($header);
-				// $headings[] = 'Error No';
-				// $headings[] = 'Error Details';
-				// $sheet->fromArray(array($headings));
-			});
-		})->store('xlsx', storage_path('app/' . $destination));
+		//STORING UPLOADED EXCEL FILE
+		$destination = $import_type->folder_path;
+		$src_file_name = $import_job->id . '-src.' . $attachment_extension;
+		Storage::makeDirectory($destination, 0777);
+		$r->file($attachment)->storeAs($destination, $src_file_name);
 
 		//CALCULATING TOTAL RECORDS
 		$total_records = Excel::load('storage/app/' . $destination . $src_file_name, function ($reader) {
@@ -181,17 +180,22 @@ class ImportCronJob extends Model {
 		})->get();
 		$total_records = count($total_records);
 
-		$import_job = new ImportCronJob;
-		$import_job->company_id = Auth::user()->company_id;
-		$import_job->type_id = $import_type->id;
-		$import_job->status_id = 7200; //PENDING
-		$import_job->entity_id = $r->entity_id ? $r->entity_id : '';
-		$import_job->total_record_count = $total_records;
 		$import_job->src_file = $destination . $src_file_name;
-		$import_job->output_file = $destination . $output_file . '.xlsx';
-		$import_job->created_by_id = Auth::user()->id;
-
+		$import_job->output_file = $destination . $import_job->id . '-report.xlsx';
+		$import_job->total_record_count = $total_records;
 		$import_job->save();
+
+		//CREATING & STORING OUTPUT EXCEL FILE
+		// $output_file = $timetamp . '-output-file';
+		// Excel::create($output_file, function ($excel) use ($header) {
+		// 	$excel->sheet('Error Details', function ($sheet) use ($header) {
+		// 		// $headings = array_keys($header);
+		// 		// $headings[] = 'Error No';
+		// 		// $headings[] = 'Error Details';
+		// 		// $sheet->fromArray(array($headings));
+		// 	});
+		// })->store('xlsx', storage_path('app/' . $destination));
+
 		return [
 			'success' => true,
 			'message' => 'File added to import queue successfully',
