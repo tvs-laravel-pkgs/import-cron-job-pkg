@@ -257,7 +257,7 @@ class ImportCronJob extends Model {
 						}
 					}
 				});
-			})->store('xlsx', storage_path('' . $job->type->folder_path));
+			})->store('xlsx', storage_path('app/' . $job->type->folder_path));
 		}
 		dump('Success.', $job->toArray());
 
