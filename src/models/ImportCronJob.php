@@ -212,7 +212,7 @@ class ImportCronJob extends Model {
 
 	public static function getRecordsFromExcel($job, $max_col) {
 		//READING EXCEL FILE
-		$objPHPExcel = PHPExcel_IOFactory::load('storage/app/' . $job->src_file);
+		$objPHPExcel = PHPExcel_IOFactory::load(storage_path('app/' . $job->src_file));
 		$sheet = $objPHPExcel->getSheet(0);
 		$highestRow = $sheet->getHighestDataRow();
 
@@ -240,7 +240,7 @@ class ImportCronJob extends Model {
 		$job = $params['job'];
 		$all_error_records = $params['all_error_records'];
 		if (count($all_error_records) > 0) {
-			Excel::load('storage/app/' . $job->output_file, function ($excel) use ($all_error_records, $job) {
+			Excel::load(storage_path('storage/app/' . $job->output_file), function ($excel) use ($all_error_records, $job) {
 				$excel->sheet('Error Details', function ($sheet) use ($all_error_records) {
 					foreach ($all_error_records as $key => $error_record) {
 						if ($key == 0) {
