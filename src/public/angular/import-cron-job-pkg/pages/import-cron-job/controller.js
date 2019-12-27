@@ -4,11 +4,11 @@ app.config(['$routeProvider', function($routeProvider) {
     //ImportCronJob
     when('/import-cron-job-pkg/import-job/list', {
         template: '<import-cron-job-list></import-cron-job-list>',
-        title: 'Import Cron Jobs',
+        title: 'Import Status',
     }).
     when('/import-cron-job-pkg/import-job/form/:id', {
         template: '<import-cron-job-form></import-cron-job-form>',
-        title: 'Add Import Cron Job',
+        title: 'Add Import Status',
     })
 }]);
 
@@ -22,6 +22,7 @@ app.component('importCronJobList', {
             "dom": dom_structure,
             "language": {
                 "search": "",
+                "searchPlaceholder": "Search",
                 "lengthMenu": "Rows Per Page _MENU_",
                 "paginate": {
                     "next": '<i class="icon ion-ios-arrow-forward"></i>',
@@ -54,8 +55,11 @@ app.component('importCronJobList', {
                 { data: 'new_count', searchable: false },
                 { data: 'updated_count', searchable: false },
                 { data: 'error_count', searchable: false },
-                { data: 'src_file', searchable: false },
-                { data: 'output_file', searchable: false },
+                { data: 'start_time', searchable: false },
+                { data: 'end_time', searchable: false },
+                { data: 'duration', searchable: false },
+                // { data: 'src_file', searchable: false },
+                // { data: 'output_file', searchable: false },
                 { data: 'created_by', name: 'cb.name', searchable: true },
             ],
             "initComplete": function(settings, json) {
@@ -67,10 +71,16 @@ app.component('importCronJobList', {
             },
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
+            },
+            createdRow: function(row, data, dataIndex) {
+                $(row).find('td:eq(4)')
+                    .attr('data-toggle', 'toggle')
+                    .attr('title', data.error_details_tooltip)
+                    .attr('data-placement', 'left');
             }
         });
 
-        $('.page-header-content .display-inline-block .data-table-title').html('Import Jobs <span class="badge badge-secondary" id="table_info">0</span>');
+        $('.page-header-content .display-inline-block .data-table-title').html('Import Status <span class="badge badge-secondary" id="table_info">0</span>');
         $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
         $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
 

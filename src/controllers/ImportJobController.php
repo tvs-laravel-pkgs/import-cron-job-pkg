@@ -37,6 +37,9 @@ class ImportJobController extends Controller {
 				'import_jobs.src_file',
 				'import_jobs.output_file',
 				'import_jobs.error_details',
+				DB::raw('DATE_FORMAT(import_jobs.start_time,"%h:%i:%s %p") as start_time'),
+				DB::raw('DATE_FORMAT(import_jobs.end_time,"%h:%i:%s %p") as end_time'),
+				'import_jobs.duration',
 				// 'cb.name as created_by',
 				'suppliers.name as created_by'
 			)
@@ -54,21 +57,32 @@ class ImportJobController extends Controller {
 				$delete = asset('/public/img/content/table/delete-default.svg');
 				$delete_active = asset('/public/img/content/table/delete-active.svg');
 
-				return '<a href="javascript:;" data-toggle="modal" data-target="#delete_import_job"
+				return '<a href="storage/app/' . $import_jobs->src_file . '">source
+					</a>
+					<a href="storage/app/' . $import_jobs->output_file . '">output</a>
+					<a href="javascript:;" data-toggle="modal" data-target="#delete_import_job"
 					onclick="angular.element(this).scope().deleteImportJob(' . $import_jobs->id . ')" dusk = "delete-btn" title="Delete"><img src="' . $delete . '" alt="Delete" class="img-responsive" onmouseover=this.src="' . $delete_active . '" onmouseout=this.src="' . $delete . '" >
-					</a>';
+					</a>'
+				;
 			})
-			->addColumn('src_file', function ($import_jobs) {
-				return '<a href="storage/app/' . $import_jobs->src_file . '">Download</a>';
-			})
-			->addColumn('output_file', function ($import_jobs) {
-				return '<a href="storage/app/' . $import_jobs->output_file . '">Download</a>';
+		// ->addColumn('src_file', function ($import_jobs) {
+		// 	return '<a href="storage/app/' . $import_jobs->src_file . '">Download</a>';
+		// })
+		// ->addColumn('output_file', function ($import_jobs) {
+		// 	return '<a href="storage/app/' . $import_jobs->output_file . '">Download</a>';
+		// })
+			->addColumn('error_details_tooltip', function ($import_jobs) {
+				return $import_jobs->error_details;
 			})
 			->addColumn('error_details', function ($import_jobs) {
 				$color = "color-red";
 				$error_details = $import_jobs->error_details;
-				// return '<a href="#!" data-toggle="tooltip" title=' . $error_details . ' class="' . $color . '">' . (strlen($error_details) > 20) ? substr($error_details, 0, 20) . '...' : $error_details . '</a>';
-				return '<span class="' . $color . '">' . wordwrap($error_details, 30, "<br>", true) . '</span>';
+				if (!empty($import_jobs->error_details)) {
+					return '<a href="#!" class="' . $color . '">' . (strlen($error_details) > 20) ? substr($error_details, 0, 20) . '...' : $error_details . '</a>';
+				} else {
+					return '';
+				}
+				// return '<span class="' . $color . '">' . wordwrap($error_details, 30, "<br>", true) . '</span>';
 			})
 			->addColumn('status', function ($import_jobs) {
 				//PENDING
