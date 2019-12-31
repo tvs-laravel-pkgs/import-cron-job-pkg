@@ -54,12 +54,15 @@ class ImportJobController extends Controller {
 
 		return Datatables::of($import_jobs)
 			->addColumn('action', function ($import_jobs) {
+				$source = asset('/public/img/content/icons/upload_normal.svg');
+				$source_active = asset('/public/img/content/icons/upload_hover.svg');
+				$error = asset('/public/img/content/icons/error_normal.svg');
+				$error_active = asset('/public/img/content/icons/error_hover.svg');
 				$delete = asset('/public/img/content/table/delete-default.svg');
 				$delete_active = asset('/public/img/content/table/delete-active.svg');
 
-				return '<a href="storage/app/' . $import_jobs->src_file . '">source
-					</a>
-					<a href="storage/app/' . $import_jobs->output_file . '">output</a>
+				return '<a href="storage/app/' . $import_jobs->src_file . '"><img src="' . $source . '" alt="Source File" class="img-responsive" onmouseover=this.src="' . $source_active . '" onmouseout=this.src="' . $source . '" ></a>
+					<a href="storage/app/' . $import_jobs->output_file . '"><img src="' . $error . '" alt="Error File" class="img-responsive" onmouseover=this.src="' . $error_active . '" onmouseout=this.src="' . $error . '" ></a>
 					<a href="javascript:;" data-toggle="modal" data-target="#delete_import_job"
 					onclick="angular.element(this).scope().deleteImportJob(' . $import_jobs->id . ')" dusk = "delete-btn" title="Delete"><img src="' . $delete . '" alt="Delete" class="img-responsive" onmouseover=this.src="' . $delete_active . '" onmouseout=this.src="' . $delete . '" >
 					</a>'
