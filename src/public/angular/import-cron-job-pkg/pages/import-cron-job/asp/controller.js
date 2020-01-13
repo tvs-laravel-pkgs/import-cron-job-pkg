@@ -79,6 +79,36 @@ app.component('importCronJobList', {
         $scope.refresh = function() {
             $('#table').DataTable().ajax.reload();
         };
+
+        $scope.deleteImportJob = function($id) {
+            bootbox.confirm({
+                message: 'Do you want to delete this import job?',
+                className: 'action-confirm-modal',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function(result) {
+                    if (result) {
+                        $http.get(
+                            import_cron_job_delete + '/' + $id,
+                        ).then(function(response) {
+                            if (response.data.success) {
+                                custom_noty('success', 'Import job deleted successfully');
+                                $('#table').DataTable().ajax.reload(function(json) {});
+                                $location.path('/import-cron-job-pkg/import-job/list');
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 });
 //------------------------------------------------------------------------------------------------------------------------
