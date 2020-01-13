@@ -136,7 +136,7 @@ app.component('importCronJobList', {
 app.component('importCronJobForm', {
     templateUrl: import_cron_job_from_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope) {
-        get_form_data_url = import_cron_job_from_data_check + '/' + $routeParams.id;
+        get_form_data_url = import_cron_job_from_data_url + '/' + $routeParams.id;
         if ($routeParams.id != 2) {
             $location.path('/page-not-found')
             // $scope.$apply()
@@ -144,16 +144,16 @@ app.component('importCronJobForm', {
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
-        self.import_cron_job_template_file_url = import_cron_job_template_file_url;
+        self.import_cron_job_template_base_path = import_cron_job_template_base_path;
         $http.get(
             get_form_data_url
         ).then(function(response) {
             console.log(response);
             self.impoty_type = response.data.impoty_type;
-            if (self.impoty_type.permission != 'import-coupon') {
-                $location.path('/page-not-found')
-                $scope.$apply()
-            }
+            // if (self.impoty_type.permission != 'import-coupon') {
+            //     $location.path('/page-not-found')
+            //     $scope.$apply()
+            // }
             // $rootScope.loading = false;
         });
 
