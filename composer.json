@@ -1,6 +1,6 @@
 {
     "name": "abs/import-cron-job-pkg",
-    "description": "For ImportCronJob CRUD",
+    "description": "For ImportCronJob CRUD.",
     "type": "library",
     "require":
     {},
