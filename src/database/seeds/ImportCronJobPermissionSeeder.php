@@ -1,6 +1,8 @@
 <?php
 namespace Abs\ImportCronJobPkg\Database\Seeds;
 
+use App\Config;
+use App\ConfigType;
 use App\Permission;
 use Illuminate\Database\Seeder;
 
@@ -39,5 +41,51 @@ class ImportCronJobPermissionSeeder extends Seeder {
 			$permission->fill($permsion);
 			$permission->save();
 		}
+
+		$config_types = [
+			7008 => 'Import Job Statuses',
+		];
+
+		$configs = [
+
+			//IMPORT JOB STATUSES
+			7200 => [
+				'name' => 'Pending',
+				'entity_type_id' => 7008,
+			],
+			7201 => [
+				'name' => 'Inprogress',
+				'entity_type_id' => 7008,
+			],
+			7202 => [
+				'name' => 'Completed',
+				'entity_type_id' => 7008,
+			],
+			7203 => [
+				'name' => 'Error',
+				'entity_type_id' => 7008,
+			],
+			7204 => [
+				'name' => 'Calculating Total Records',
+				'entity_type_id' => 7008,
+			],
+		];
+
+		foreach ($config_types as $config_type_id => $config_type_name) {
+			$config_type = ConfigType::firstOrNew([
+				'id' => $config_type_id,
+			]);
+			$config_type->name = $config_type_name;
+			$config_type->save();
+		}
+
+		foreach ($configs as $id => $config_data) {
+			$config = Config::firstOrNew([
+				'id' => $id,
+			]);
+			$config->fill($config_data);
+			$config->save();
+		}
+
 	}
 }

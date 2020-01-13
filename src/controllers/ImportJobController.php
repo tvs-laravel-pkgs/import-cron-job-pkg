@@ -3,7 +3,6 @@
 namespace Abs\ImportCronJobPkg;
 use Abs\ImportCronJobPkg\ImportCronJob;
 use App\Http\Controllers\Controller;
-use App\User;
 use Auth;
 use DB;
 use Entrust;
@@ -18,9 +17,8 @@ class ImportJobController extends Controller {
 	public function getImportCronJobList(Request $request) {
 		$import_jobs = ImportCronJob::
 			join('import_types as type', 'type.id', '=', 'import_jobs.type_id')
-			->join('configs as status', 'status.id', '=', 'import_jobs.status_id')
-			->join('users as cb', 'cb.id', '=', 'import_jobs.created_by_id')
-			->join('suppliers', 'suppliers.id', 'cb.entity_id')
+			->leftjoin('configs as status', 'status.id', '=', 'import_jobs.status_id')
+			->leftjoin('users as cb', 'cb.id', '=', 'import_jobs.created_by_id')
 			->select(
 				DB::raw('DATE_FORMAT(import_jobs.created_at,"%d/%m/%Y %h:%i %p") as created'),
 				'type.name as type',
@@ -40,11 +38,10 @@ class ImportJobController extends Controller {
 				DB::raw('DATE_FORMAT(import_jobs.start_time,"%h:%i:%s %p") as start_time'),
 				DB::raw('DATE_FORMAT(import_jobs.end_time,"%h:%i:%s %p") as end_time'),
 				'import_jobs.duration',
-				// 'cb.name as created_by',
-				'suppliers.name as created_by'
+				'cb.name as created_by'
 			)
-			->where('import_jobs.company_id', Auth::user()->company_id)
-			->where('cb.user_type_id', 8)
+		// ->where('import_jobs.company_id', Auth::user()->company_id)
+			->where('import_jobs.company_id', 1)
 			->orderBy('import_jobs.created_at', 'DESC')
 		;
 

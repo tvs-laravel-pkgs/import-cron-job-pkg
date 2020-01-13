@@ -8,7 +8,7 @@
                     <div class="page-content-inner">
                         <!-- {{Form::open(['files' => true,"id" => "form"])}} -->
                         <form id="import-form" enctype="multipart/form-data">
-                            <input type="hidden" name="type_id" value="2">
+                            <input type="hidden" name="type_id" value="{{$ctrl.type_id}}">
                             <div class="card-center">
                                 <div class="card-boxed card-progress">
                                     <div class="row custom-row">
@@ -41,7 +41,7 @@
                                         <div class="col-md-12">
                                             <ul class="card-button">
                                                 <li class="text-left">
-                                                    <a id="po_item_template" class="btn btn-border" href="{{$ctrl.import_cron_job_template_file_url}}/{{$ctrl.impoty_type.template_file}}" download><i class="icon ion-md-download"></i>Download Template</a>
+                                                    <a id="po_item_template" class="btn btn-border" href="{{$ctrl.import_cron_job_template_base_path}}/{{$ctrl.impoty_type.template_file}}" download><i class="icon ion-md-download"></i>Download Template</a>
                                                 </li>
                                                 <li class="text-right">
                                                     <input type="submit" class="btn btn-upload" id="upload" value="Upload">
@@ -53,38 +53,6 @@
                             </div>
                             <!--   {{Form::close()}} -->
                         </form>
-                        <div class="card-transition">
-                            <div class="card-boxed">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="skills" data-percent="0%" id="import_progress">
-                                            <span>0% Completed</span>
-                                            <div class="skillbar" style="width:0%;"></div>
-                                        </div><!-- Skills -->
-                                    </div><!-- Column -->
-                                    <div class="col-md-6">
-                                        <div class="card-block">
-                                            <p class="color-secondary-light">Total Records : <span id='total_count'>Calculating</span></p>
-                                        </div><!-- Card Block -->
-                                    </div><!-- Column -->
-                                    <div class="col-md-6">
-                                        <div class="card-block">
-                                            <p class="color-green">New Records : <span id='new_count'>0</span></p>
-                                        </div><!-- Card Block -->
-                                    </div><!-- Column -->
-                                    <div class="col-md-12">
-                                        <div class="card-block">
-                                            <p class="color-red">Error Records : <span id='error_count'>0</span></p>
-                                        </div><!-- Card Block -->
-                                    </div><!-- Column -->
-                                    <div class="col-md-12">
-                                        <div class="text-center" style="margin-bottom: 20px;">
-                                            <a type="button" class="btn progress-close" ng-click="progressClose()">Close</a>
-                                        </div>
-                                    </div>
-                                </div><!-- Row -->
-                            </div><!-- Card Boxed -->
-                        </div><!-- Card Transition -->
                     </div><!-- Page Content Inner -->
                 </div><!-- Col Main -->
             </div><!-- Row -->

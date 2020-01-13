@@ -117,6 +117,7 @@ class ImportCronJob extends Model {
 			ini_set('memory_limit', '-1');
 			$attachment = 'excel_file';
 			$attachment_extension = $r->file($attachment)->getClientOriginalExtension();
+			// dd($attachment_extension);
 			if ($attachment_extension != "xlsx" && $attachment_extension != "xls") {
 				$response = [
 					'success' => false,
@@ -130,7 +131,14 @@ class ImportCronJob extends Model {
 
 			$objPHPExcel = PHPExcel_IOFactory::load($file);
 			$sheet = $objPHPExcel->getSheet(0);
-			$header = $sheet->rangeToArray('A1:F1', NULL, TRUE, FALSE);
+
+			$number_columns = $import_type->columns()->count('id');
+			$alphabet = range('A', 'Z');
+			$char1 = (int) intdiv($number_columns, 26) - 1;
+			$char1 = $alphabet[$char1];
+			$char2 = (int) ($number_columns % 26) - 2;
+			$char2 = $char2 != 0 ? $alphabet[$char2] : '';
+			$header = $sheet->rangeToArray('A1:' . $char1 . $char2 . '1', NULL, TRUE, FALSE);
 			$header = $header[0];
 
 			foreach ($header as $key => $column) {
@@ -161,7 +169,8 @@ class ImportCronJob extends Model {
 
 			DB::beginTransaction();
 			$import_job = new ImportCronJob;
-			$import_job->company_id = Auth::user()->company_id;
+			// $import_job->company_id = Auth::user()->company_id;
+			$import_job->company_id = 1;
 			$import_job->type_id = $import_type->id;
 			$import_job->status_id = 7200; //PENDING
 			$import_job->entity_id = $r->entity_id ? $r->entity_id : '';
@@ -210,7 +219,7 @@ class ImportCronJob extends Model {
 			return [
 				'success' => false,
 				'errors' => [
-					'Invalid file format, Please Import Excel Format File',
+					$e->getMessage(),
 				],
 			];
 		}
