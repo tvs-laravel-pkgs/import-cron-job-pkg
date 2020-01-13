@@ -100,6 +100,7 @@ class ImportJobController extends Controller {
 				}
 				return '<span class="' . $color . '">' . $import_jobs->status . '</span>';
 			})
+			->rawColumns(['action', 'error_details', 'status'])
 			->make(true);
 	}
 

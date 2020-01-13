@@ -19,7 +19,7 @@ app.component('importCronJobList', {
         self.hasPermission = HelperService.hasPermission;
 
         var dataTable = $('#table').DataTable({
-            // "dom": dom_structure,
+            "dom": dom_structure,
             "language": {
                 "search": "",
                 "searchPlaceholder": "Search",
