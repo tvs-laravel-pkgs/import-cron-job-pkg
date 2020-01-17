@@ -139,7 +139,7 @@ class ImportCronJob extends Model {
 			dump($number_columns);
 			$alphabet = range('A', 'Z');
 			$char1 = (int) intdiv($number_columns, 26) - 1;
-			dd($alphabet,$char1)
+			dd($alphabet,$char1);
 			$char1 = $alphabet[$char1];
 			$char2 = (int) ($number_columns % 26) - 2;
 			$char2 = $char2 != 0 ? $alphabet[$char2] : '';
