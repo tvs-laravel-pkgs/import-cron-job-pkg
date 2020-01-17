@@ -140,6 +140,7 @@ class ImportCronJob extends Model {
 			$char2 = $char2 != 0 ? $alphabet[$char2] : '';
 			$header = $sheet->rangeToArray('A1:' . $char1 . $char2 . '1', NULL, TRUE, FALSE);
 			$header = $header[0];
+			dd($header);
 
 			foreach ($header as $key => $column) {
 				$empty_columns = [];
