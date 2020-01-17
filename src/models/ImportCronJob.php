@@ -133,7 +133,7 @@ class ImportCronJob extends Model {
 
 			$objPHPExcel = PHPExcel_IOFactory::load($file);
 			$sheet = $objPHPExcel->getSheet(0);
-			dump('sheet'.$sheet);
+			dump($sheet);
 
 			$number_columns = $import_type->columns()->count('id');
 			dump($number_columns);
