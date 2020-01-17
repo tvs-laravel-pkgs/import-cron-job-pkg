@@ -129,17 +129,19 @@ class ImportCronJob extends Model {
 				return $response;
 			}
 			$file = $r->file($attachment)->getRealPath();
-			dump($file);
+			//dump($file);
 
 			$objPHPExcel = PHPExcel_IOFactory::load($file);
 			$sheet = $objPHPExcel->getSheet(0);
 
 			$number_columns = $import_type->columns()->count('id');
+			dump($number_columns);
 			$alphabet = range('A', 'Z');
 			$char1 = (int) intdiv($number_columns, 26) - 1;
 			$char1 = $alphabet[$char1];
 			$char2 = (int) ($number_columns % 26) - 2;
 			$char2 = $char2 != 0 ? $alphabet[$char2] : '';
+			dump($char1,$char2);
 			$header = $sheet->rangeToArray('A1:' . $char1 . $char2 . '1', NULL, TRUE, FALSE);
 			$header = $header[0];
 			dd($header);
