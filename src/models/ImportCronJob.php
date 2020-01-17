@@ -138,6 +138,7 @@ class ImportCronJob extends Model {
 			$number_columns = $import_type->columns()->count('id');
 			dump($number_columns);
 			$alphabet = range('A', 'Z');
+			dd(intdiv($number_columns, 26) - 1);
 			$char1 = (int) intdiv($number_columns, 26) - 1;
 			dd($alphabet,$char1);
 			$char1 = $alphabet[$char1];
