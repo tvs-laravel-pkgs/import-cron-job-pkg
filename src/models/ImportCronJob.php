@@ -129,6 +129,7 @@ class ImportCronJob extends Model {
 				return $response;
 			}
 			$file = $r->file($attachment)->getRealPath();
+			dump($file);
 
 			$objPHPExcel = PHPExcel_IOFactory::load($file);
 			$sheet = $objPHPExcel->getSheet(0);
