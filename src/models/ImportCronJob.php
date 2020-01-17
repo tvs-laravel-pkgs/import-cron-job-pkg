@@ -101,7 +101,7 @@ class ImportCronJob extends Model {
 					'errors' => $validator->errors()->all(),
 				];
 			}
-			dump('in');
+			//dump('in');
 
 			$import_type = ImportType::find($r->type_id);
 			if (!$import_type) {
@@ -113,7 +113,7 @@ class ImportCronJob extends Model {
 					],
 				];
 			}
-		dd($import_type);
+		//dd($import_type);
 			ini_set('max_execution_time', 0);
 			ini_set('memory_limit', '-1');
 			$attachment = 'excel_file';
@@ -141,7 +141,7 @@ class ImportCronJob extends Model {
 			$char2 = $char2 != 0 ? $alphabet[$char2] : '';
 			$header = $sheet->rangeToArray('A1:' . $char1 . $char2 . '1', NULL, TRUE, FALSE);
 			$header = $header[0];
-			//dd($header);
+			dd($header);
 
 			foreach ($header as $key => $column) {
 				$empty_columns = [];
