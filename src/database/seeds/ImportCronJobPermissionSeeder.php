@@ -14,33 +14,55 @@ class ImportCronJobPermissionSeeder extends Seeder {
 	 */
 	public function run() {
 		$permissions = [
-			10200 => [
-				'display_order' => 10,
-				'parent_id' => null,
+			//IMPORT STATUSES
+			[
+				'display_order' => 99,
+				'parent' => null,
 				'name' => 'import-cron-jobs',
 				'display_name' => 'Import Status',
 			],
-			10201 => [
+			[
 				'display_order' => 1,
-				'parent_id' => 10200,
+				'parent' => 'import-cron-jobs',
 				'name' => 'view-all-import-cron-job',
 				'display_name' => 'View All',
 			],
-			10202 => [
-				'display_order' => 1,
-				'parent_id' => 10200,
+			[
+				'display_order' => 2,
+				'parent' => 'import-cron-jobs',
 				'name' => 'view-own-import-cron-job',
 				'display_name' => 'View Own Only',
 			],
+
+			//IMPORT TYPES
+			[
+				'display_order' => 99,
+				'parent' => null,
+				'name' => 'import-types',
+				'display_name' => 'Import Type',
+			],
+			[
+				'display_order' => 1,
+				'parent' => 'import-types',
+				'name' => 'add-import-type',
+				'display_name' => 'Add',
+			],
+			[
+				'display_order' => 2,
+				'parent' => 'import-types',
+				'name' => 'delete-import-type',
+				'display_name' => 'Edit',
+			],
+			[
+				'display_order' => 3,
+				'parent' => 'import-types',
+				'name' => 'delete-import-type',
+				'display_name' => 'Delete',
+			],
+
 		];
 
-		foreach ($permissions as $permission_id => $permsion) {
-			$permission = Permission::firstOrNew([
-				'id' => $permission_id,
-			]);
-			$permission->fill($permsion);
-			$permission->save();
-		}
+		Permission::createFromArrays($permissions);
 
 		$config_types = [
 			7008 => 'Import Job Statuses',
