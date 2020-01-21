@@ -135,12 +135,34 @@ class ImportCronJob extends Model {
 			$sheet = $objPHPExcel->getSheet(0);
 
 			$number_columns = $import_type->columns()->count('id');
+			//$number_columns=100;
+			$column_range=self::getNameFromNumber($number_columns);
+			//dd($column_range);
+			/*dd($column_range);
+			//$numeric = ($number_columns - 1) % 26;
+			//dd($number_columns,$numeric);
+			$letter = chr(65 + $numeric);
+			dd($letter);
+			$num2 = intval(($number_columns - 1) / 26);
+			if ($num2 > 0) {
+				$numeric = ($num2 - 1) % 26;
+				$letter2 = chr(65 + $numeric);
+				dd($letter2);
+			//return getNameFromNumber($num2) . $letter;
+			} else {
+			return $letter;
+			}
+			dd($letter);
+			$rem=(int) ($number_columns % 26);
+			dd($rem);
+			dump($number_columns);
 			$alphabet = range('A', 'Z');
 			$char1 = (int) intdiv($number_columns, 26) - 1;
+			dd($char1);
 			$char1 = $alphabet[$char1];
 			$char2 = (int) ($number_columns % 26) - 2;
-			$char2 = $char2 != 0 ? $alphabet[$char2] : '';
-			$header = $sheet->rangeToArray('A1:' . $char1 . $char2 . '1', NULL, TRUE, FALSE);
+			$char2 = $char2 != 0 ? $alphabet[$char2] : '';*/
+			$header = $sheet->rangeToArray('A1:' . $column_range . '1', NULL, TRUE, FALSE);
 			$header = $header[0];
 
 			foreach ($header as $key => $column) {
@@ -153,7 +175,7 @@ class ImportCronJob extends Model {
 
 			$columns = $import_type->columns()->where('is_required', 1)->pluck('excel_column_name');
 			$mandatory_fields = $columns;
-			// dd($mandatory_fields, $header);
+			//dd($mandatory_fields, $header);
 			$missing_fields = [];
 			foreach ($mandatory_fields as $mandatory_field) {
 				if (!in_array($mandatory_field, $header)) {
@@ -225,6 +247,17 @@ class ImportCronJob extends Model {
 				],
 			];
 		}
+	}
+
+	public static function getNameFromNumber($num) {
+	    $numeric = ($num - 1) % 26;
+	    $letter = chr(65 + $numeric);
+	    $num2 = intval(($num - 1) / 26);
+	    if ($num2 > 0) {
+	        return self::getNameFromNumber($num2) . $letter;
+	    } else {
+	        return $letter;
+	    }
 	}
 
 	public function incrementNew() {
