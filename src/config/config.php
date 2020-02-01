@@ -1,4 +1,4 @@
 <?php
 return [
-	'DEV' => env('TESTIMONIAL_PKG_DEV', false),
+	'DEV' => env('IMPORT_CRON_JOB_PKG_DEV', false),
 ];
