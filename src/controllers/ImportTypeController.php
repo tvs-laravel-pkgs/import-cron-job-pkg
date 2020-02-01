@@ -1,9 +1,8 @@
 <?php
 
-namespace Abs\ImportTypePkg;
-use Abs\ImportTypePkg\ImportType;
+namespace Abs\ImportCronJobPkg;
+use Abs\ImportCronJobPkg\ImportType;
 use App\Address;
-use App\Country;
 use App\Http\Controllers\Controller;
 use Auth;
 use Carbon\Carbon;
@@ -15,79 +14,41 @@ use Yajra\Datatables\Datatables;
 class ImportTypeController extends Controller {
 
 	public function __construct() {
+		$this->data['theme'] = config('custom.admin_theme');
 	}
 
 	public function getImportTypeList(Request $request) {
-		$import_types = ImportType::withTrashed()
-			->select(
-				'import_types.id',
-				'import_types.code',
-				'import_types.name',
-				DB::raw('IF(import_types.mobile_no IS NULL,"--",import_types.mobile_no) as mobile_no'),
-				DB::raw('IF(import_types.email IS NULL,"--",import_types.email) as email'),
-				DB::raw('IF(import_types.deleted_at IS NULL,"Active","Inactive") as status')
-			)
-			->where('import_types.company_id', Auth::user()->company_id)
-			->where(function ($query) use ($request) {
-				if (!empty($request->import_type_code)) {
-					$query->where('import_types.code', 'LIKE', '%' . $request->import_type_code . '%');
-				}
-			})
-			->where(function ($query) use ($request) {
-				if (!empty($request->import_type_name)) {
-					$query->where('import_types.name', 'LIKE', '%' . $request->import_type_name . '%');
-				}
-			})
-			->where(function ($query) use ($request) {
-				if (!empty($request->mobile_no)) {
-					$query->where('import_types.mobile_no', 'LIKE', '%' . $request->mobile_no . '%');
-				}
-			})
-			->where(function ($query) use ($request) {
-				if (!empty($request->email)) {
-					$query->where('import_types.email', 'LIKE', '%' . $request->email . '%');
-				}
-			})
+		$import_types = ImportType::select(
+			'import_types.*',
+			'import_types.action as import_type_action'
+		)
 			->orderby('import_types.id', 'desc');
 
 		return Datatables::of($import_types)
-			->addColumn('code', function ($import_type) {
-				$status = $import_type->status == 'Active' ? 'green' : 'red';
-				return '<span class="status-indicator ' . $status . '"></span>' . $import_type->code;
-			})
 			->addColumn('action', function ($import_type) {
+				$edit = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow.svg');
+				$edit_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow-active.svg');
+				$delete = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
+				$delete_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
 				$edit_img = asset('public/theme/img/table/cndn/edit.svg');
 				$delete_img = asset('public/theme/img/table/cndn/delete.svg');
-				return '
-					<a href="#!/import_type-pkg/import_type/edit/' . $import_type->id . '">
-						<img src="' . $edit_img . '" alt="View" class="img-responsive">
-					</a>
-					<a href="javascript:;" data-toggle="modal" data-target="#delete_import_type"
-					onclick="angular.element(this).scope().deleteImportType(' . $import_type->id . ')" dusk = "delete-btn" title="Delete">
-					<img src="' . $delete_img . '" alt="delete" class="img-responsive">
-					</a>
-					';
+				return '<a href="#!/import-cron-job-pkg/import-type/edit/' . $import_type->id . '">
+						<img src="' . $edit . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $edit_active . '" onmouseout=this.src="' . $edit . '" ></a>
+						<a href="javascript:;" data-toggle="modal" data-target="#delete_import_type"
+						onclick="angular.element(this).scope().deleteImportType(' . $import_type->id . ')" dusk = "delete-btn" title="Delete">
+						<img src="' . $delete . '" alt="Delete" class="img-responsive" onmouseover=this.src="' . $delete_active . '" onmouseout=this.src="' . $delete . '" >
+						</a>';
 			})
 			->make(true);
 	}
 
-	public function getImportTypeFormData($id = NULL) {
-		if (!$id) {
-			$import_type = new ImportType;
-			$address = new Address;
-			$action = 'Add';
-		} else {
-			$import_type = ImportType::withTrashed()->find($id);
-			$address = Address::where('address_of_id', 24)->where('entity_id', $id)->first();
-			if (!$address) {
-				$address = new Address;
-			}
-			$action = 'Edit';
-		}
-		$this->data['country_list'] = $country_list = Collect(Country::select('id', 'name')->get())->prepend(['id' => '', 'name' => 'Select Country']);
-		$this->data['import_type'] = $import_type;
-		$this->data['address'] = $address;
-		$this->data['action'] = $action;
+	public function getImportTypeFormData(Request $request) {
+		$id = $request->id;
+		$this->data['import_type'] = $import_type = ImportType::where('id', $id)->with([
+			'columns',
+		])->first();
+		$this->data['action'] = $action = 'Edit';
+		$this->data['theme'];
 
 		return response()->json($this->data);
 	}
@@ -183,11 +144,15 @@ class ImportTypeController extends Controller {
 			return response()->json(['success' => false, 'errors' => ['Exception Error' => $e->getMessage()]]);
 		}
 	}
-	public function deleteImportType($id) {
-		$delete_status = ImportType::withTrashed()->where('id', $id)->forceDelete();
-		if ($delete_status) {
-			$address_delete = Address::where('address_of_id', 24)->where('entity_id', $id)->forceDelete();
-			return response()->json(['success' => true]);
+	public function deleteImportType(Request $request) {
+		DB::beginTransaction();
+		try {
+			$delete_import_type = ImportType::where('id', $request->id)->forceDelete();
+			DB::commit();
+			return response()->json(['success' => true, 'message' => 'Import Type deleted successfully']);
+		} catch (Exception $e) {
+			DB::rollBack();
+			return response()->json(['success' => false, 'errors' => ['Exception Error' => $e->getMessage()]]);
 		}
 	}
 }

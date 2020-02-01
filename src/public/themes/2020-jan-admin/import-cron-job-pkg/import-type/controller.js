@@ -5,10 +5,6 @@ app.config(['$routeProvider', function($routeProvider) {
         template: '<import-type-list></import-type-list>',
         title: 'Import Types',
     }).
-    when('/import-cron-job-pkg/import-type/add', {
-        template: '<import-type-form></import-type-form>',
-        title: 'Add Import Type',
-    }).
     when('/import-cron-job-pkg/import-type/edit/:id', {
         template: '<import-type-form></import-type-form>',
         title: 'Edit Import Type',
@@ -21,9 +17,8 @@ app.component('importTypeList', {
         $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
-        var table_scroll;
-        table_scroll = $('.page-main-content').height() - 37;
-        var dataTable = $('#faqs_list').DataTable({
+        
+        var dataTable = $('#import_type_list').DataTable({
             "dom": dom_structure,
             "language": {
                 "search": "",
@@ -41,12 +36,19 @@ app.component('importTypeList', {
             paging: true,
             ordering: false,
             ajax: {
-                url: laravel_routes['getFaqList'],
+                url: laravel_routes['getImportTypeList'],
+                type: "GET",
+                dataType: "json",
                 data: function(d) {}
             },
             columns: [
                 { data: 'action', searchable: false, class: 'action' },
-                { data: 'question', name: 'faqs.question', searchable: true },
+                { data: 'name', name: 'import_types.name', searchable: true },
+                { data: 'folder_path', name: 'import_types.folder_path', searchable: true },
+                { data: 'file_name', name: 'import_types.file_name', searchable: true },
+                { data: 'import_type_action', name: 'import_types.action', searchable: true },
+                { data: 'permission', name: 'import_types.permission', searchable: true },
+                { data: 'template_file', name: 'import_types.template_file', searchable: true },
             ],
             "infoCallback": function(settings, start, end, max, total, pre) {
                 $('#table_info').html(total + '/' + max)
@@ -59,78 +61,39 @@ app.component('importTypeList', {
             },
         });
         $('.dataTables_length select').select2();
-        $('.page-header-content .display-inline-block .data-table-title').html('FAQs <span class="badge badge-secondary" id="table_info">0</span>');
+        $('.page-header-content .display-inline-block .data-table-title').html('Import Types <span class="badge badge-secondary" id="table_info">0</span>');
         $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
         $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
-        $('.add_new_button').html(
-            '<a href="#!/faq-pkg/faq/add" type="button" class="btn btn-secondary" dusk="add-btn">' +
-            'Add FAQ' +
-            '</a>'
-        );
 
         $('.btn-add-close').on("click", function() {
-            $('#faqs_list').DataTable().search('').draw();
+            $('#import_type_list').DataTable().search('').draw();
         });
 
         $('.btn-refresh').on("click", function() {
-            $('#faqs_list').DataTable().ajax.reload();
-        });
-
-        $('.dataTables_length select').select2();
-
-        $scope.clear_search = function() {
-            $('#search_faq').val('');
-            $('#faqs_list').DataTable().search('').draw();
-        }
-
-        var dataTables = $('#faqs_list').dataTable();
-        $("#search_faq").keyup(function() {
-            dataTables.fnFilter(this.value);
+            $('#import_type_list').DataTable().ajax.reload();
         });
 
         //DELETE
-        $scope.deleteFaq = function($id) {
-            $('#faq_id').val($id);
+        $scope.deleteImportType = function($id) {
+            $('#import_type_id').val($id);
         }
         $scope.deleteConfirm = function() {
-            $id = $('#faq_id').val();
+            $id = $('#import_type_id').val();
             $http.get(
-                faq_delete_data_url + '/' + $id,
+                laravel_routes['deleteImportType'], {
+                    params: {
+                        id: $id,
+                    }
+                }
             ).then(function(response) {
                 if (response.data.success) {
-                    $noty = new Noty({
-                        type: 'success',
-                        layout: 'topRight',
-                        text: 'Faq Deleted Successfully',
-                    }).show();
-                    setTimeout(function() {
-                        $noty.close();
-                    }, 3000);
-                    $('#faqs_list').DataTable().ajax.reload(function(json) {});
-                    $location.path('/faq-pkg/faq/list');
+                    custom_noty('success', response.data.message);
+                    $('#import_type_list').DataTable().ajax.reload();
+                    $scope.$apply();
+                } else {
+                    custom_noty('error', errors);
                 }
             });
-        }
-
-        //FOR FILTER
-        $('#faq_code').on('keyup', function() {
-            dataTables.fnFilter();
-        });
-        $('#faq_name').on('keyup', function() {
-            dataTables.fnFilter();
-        });
-        $('#mobile_no').on('keyup', function() {
-            dataTables.fnFilter();
-        });
-        $('#email').on('keyup', function() {
-            dataTables.fnFilter();
-        });
-        $scope.reset_filter = function() {
-            $("#faq_name").val('');
-            $("#faq_code").val('');
-            $("#mobile_no").val('');
-            $("#email").val('');
-            dataTables.fnFilter();
         }
 
         $rootScope.loading = false;
@@ -141,41 +104,93 @@ app.component('importTypeList', {
 app.component('importTypeForm', {
     templateUrl: import_type_form_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope) {
-        get_form_data_url = typeof($routeParams.id) == 'undefined' ? laravel_routes['getFaqFormData'] : laravel_routes['getFaqFormData'] + '/' + $routeParams.id;
+        // get_form_data_url = typeof($routeParams.id) == 'undefined' ? laravel_routes['getFaqFormData'] : laravel_routes['getFaqFormData'] + '/' + $routeParams.id;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         self.angular_routes = angular_routes;
-        $http({
-            url: laravel_routes['getFaqFormData'],
-            method: 'GET',
-            params: {
-                'id': typeof($routeParams.id) == 'undefined' ? null : $routeParams.id,
-            }
-        }).then(function(response) {
-            self.faq = response.data.faq;
-            self.action = response.data.action;
-            $rootScope.loading = false;
-            if (self.action == 'Edit') {
-                if (self.faq.deleted_at) {
-                    self.switch_value = 'Inactive';
-                } else {
-                    self.switch_value = 'Active';
+        $http.get(
+            laravel_routes['getImportTypeFormData'], {
+                params: {
+                    'id': $routeParams.id,
                 }
-            } else {
-                self.switch_value = 'Active';
             }
+        ).then(function(response) {
+            console.log(response.data);
+            self.import_type = response.data.import_type;
+            self.action = response.data.action;
+            self.theme = response.data.theme;
+            $rootScope.loading = false;
+            // if (self.action == 'Edit') {
+            //     if (self.faq.deleted_at) {
+            //         self.switch_value = 'Inactive';
+            //     } else {
+            //         self.switch_value = 'Active';
+            //     }
+            // } else {
+            //     self.switch_value = 'Active';
+            // }
+        });
+
+        //ADD FIELDS
+        $scope.addImportFields = function() {
+            self.import_type.columns.push({
+                id: '',
+                company_id: '',
+                default_column_name: '',
+                excel_column_name: '',
+                switch_value: 'No',
+            });
+        }
+        //REMOVE FIELDS
+        self.import_field_removal_ids = [];
+        $scope.removeImportFields = function(index, column_id) {
+            if (column_id) {
+                self.import_field_removal_ids.push(column_id);
+                $("#import_field_removal_ids").val(JSON.stringify(self.import_field_removal_ids));
+            }
+            self.import_type.columns.splice(index, 1);
+        }
+
+        /* Tab Funtion */
+        $('.btn-nxt').on("click", function() {
+            $('.editDetails-tabs li.active').next().children('a').trigger("click");
+            tabPaneFooter();
+        });
+        $('.btn-prev').on("click", function() {
+            $('.editDetails-tabs li.active').prev().children('a').trigger("click");
+            tabPaneFooter();
         });
 
         var form_id = '#form';
         var v = jQuery(form_id).validate({
             ignore: '',
             rules: {
-                'question': {
+                'name': {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 191,
+                },
+                'folder_path': {
                     required: true,
                     minlength: 3,
                     maxlength: 255,
                 },
-                'answer': {
+                'file_name': {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 191,
+                },
+                'action': {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 255,
+                },
+                'permission': {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 255,
+                },
+                'template_file': {
                     required: true,
                     minlength: 3,
                     maxlength: 255,
