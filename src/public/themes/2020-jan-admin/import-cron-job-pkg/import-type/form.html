@@ -64,7 +64,7 @@
                                                                     *
                                                                 </span>
                                                             </label>
-                                                            <input type="text" name="name" ng-model="$ctrl.import_type.name" class="form-control required" placeholder="Enter Name">
+                                                            <input type="text" name="name" ng-model="$ctrl.import_type.name" class="form-control required" placeholder="Enter Name" autocomplete="off" minlength="3" maxlength="191">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
@@ -75,7 +75,7 @@
                                                                     *
                                                                 </span>
                                                             </label>
-                                                            <input type="text" name="folder_path" ng-model="$ctrl.import_type.folder_path" class="form-control required" placeholder="Enter Folder Path">
+                                                            <input type="text" name="folder_path" ng-model="$ctrl.import_type.folder_path" class="form-control required" placeholder="Enter Folder Path" autocomplete="off" minlength="3" maxlength="255">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
@@ -86,7 +86,7 @@
                                                                     *
                                                                 </span>
                                                             </label>
-                                                            <input type="text" name="file_name" ng-model="$ctrl.import_type.file_name" class="form-control required" placeholder="Enter File Name">
+                                                            <input type="text" name="file_name" ng-model="$ctrl.import_type.file_name" class="form-control required" placeholder="Enter File Name" autocomplete="off" minlength="3" maxlength="191">
                                                         </div><!-- Field -->
                                                     </div><!-- Column -->
                                                     <div class="col-md-3">
@@ -97,7 +97,7 @@
                                                                     *
                                                                 </span>
                                                             </label>
-                                                            <input type="text" name="action" ng-model="$ctrl.import_type.action" class="form-control required" placeholder="Enter Action">
+                                                            <input type="text" name="action" ng-model="$ctrl.import_type.action" class="form-control required" placeholder="Enter Action" autocomplete="off" minlength="3" maxlength="255">
                                                         </div><!-- Field -->
                                                     </div><!-- Column -->
                                                 </div><!-- Row -->
@@ -110,7 +110,7 @@
                                                                     *
                                                                 </span>
                                                             </label>
-                                                            <input type="text" name="permission" ng-model="$ctrl.import_type.permission" class="form-control required" placeholder="Enter Permission">
+                                                            <input type="text" name="permission" ng-model="$ctrl.import_type.permission" class="form-control required" placeholder="Enter Permission" autocomplete="off" minlength="3" maxlength="255">
                                                         </div><!-- Field -->
                                                     </div><!-- Column -->
                                                     <div class="col-md-3">
@@ -121,7 +121,7 @@
                                                                     *
                                                                 </span>
                                                             </label>
-                                                            <input type="text" name="template_file" ng-model="$ctrl.import_type.template_file" class="form-control required" placeholder="Enter Template File">
+                                                            <input type="text" name="template_file" ng-model="$ctrl.import_type.template_file" class="form-control required" placeholder="Enter Template File" autocomplete="off" minlength="3" maxlength="255">
                                                         </div><!-- Field -->
                                                     </div><!-- Column -->
                                                 </div><!-- Row -->
@@ -161,12 +161,12 @@
                                                                         </td>
                                                                         <td>
                                                                             <div class="form-group">
-                                                                                <input type="text" name="columns[{{index}}][default_column_name]" ng-model='column.default_column_name' class="form-control required default_column_name" placeholder="Enter Default Name">
+                                                                                <input type="text" name="columns[{{index}}][default_column_name]" ng-model='column.default_column_name' class="form-control required default_column_name" placeholder="Enter Default Name" autocomplete="off" minlength="3" maxlength="100">
                                                                             </div>
                                                                         </td>
                                                                         <td>
                                                                             <div class="form-group">
-                                                                                <input type="text" name="columns[{{index}}][excel_column_name]" ng-model='column.excel_column_name' class="form-control required excel_column_name" placeholder="Enter Excel Column">
+                                                                                <input type="text" name="columns[{{index}}][excel_column_name]" ng-model='column.excel_column_name' class="form-control required excel_column_name" placeholder="Enter Excel Column" autocomplete="off" minlength="3" maxlength="100">
                                                                             </div>
                                                                         </td>
                                                                         <td>

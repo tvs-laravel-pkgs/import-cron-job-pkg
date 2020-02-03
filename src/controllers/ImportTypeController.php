@@ -2,10 +2,9 @@
 
 namespace Abs\ImportCronJobPkg;
 use Abs\ImportCronJobPkg\ImportType;
-use App\Address;
+use Abs\ImportCronJobPkg\ImportTypeColumn;
 use App\Http\Controllers\Controller;
 use Auth;
-use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Validator;
@@ -54,91 +53,112 @@ class ImportTypeController extends Controller {
 	}
 
 	public function saveImportType(Request $request) {
-		// dd($request->all());
+		//dd($request->all());
 		try {
 			$error_messages = [
-				'code.required' => 'ImportType Code is Required',
-				'code.max' => 'Maximum 255 Characters',
-				'code.min' => 'Minimum 3 Characters',
-				'code.unique' => 'ImportType Code is already taken',
-				'name.required' => 'ImportType Name is Required',
-				'name.max' => 'Maximum 255 Characters',
-				'name.min' => 'Minimum 3 Characters',
-				'gst_number.required' => 'GST Number is Required',
-				'gst_number.max' => 'Maximum 191 Numbers',
-				'mobile_no.max' => 'Maximum 25 Numbers',
-				// 'email.required' => 'Email is Required',
-				'address_line1.required' => 'Address Line 1 is Required',
-				'address_line1.max' => 'Maximum 255 Characters',
-				'address_line1.min' => 'Minimum 3 Characters',
-				'address_line2.max' => 'Maximum 255 Characters',
-				// 'pincode.required' => 'Pincode is Required',
-				// 'pincode.max' => 'Maximum 6 Characters',
-				// 'pincode.min' => 'Minimum 6 Characters',
+				'name.required' => 'ImportType is Required',
+				'name.unique' => 'ImportType is already taken',
+				'folder_path.required' => 'Folder Path is Required',
+				'file_name.required' => 'File Name is Required',
+				'file_name.unique' => 'File Name is already taken',
+				'action.required' => 'Action is Required',
+				'permission.required' => 'Permission is Required',
+				'template_file.required' => 'Template File is Required',
 			];
 			$validator = Validator::make($request->all(), [
-				'code' => [
-					'required:true',
-					'max:255',
-					'min:3',
-					'unique:import_types,code,' . $request->id . ',id,company_id,' . Auth::user()->company_id,
+				'name' => [
+					'required',
+					'unique:import_types,name,' . $request->id . ',id',
 				],
-				'name' => 'required|max:255|min:3',
-				'gst_number' => 'required|max:191',
-				'mobile_no' => 'nullable|max:25',
-				// 'email' => 'nullable',
-				'address' => 'required',
-				'address_line1' => 'required|max:255|min:3',
-				'address_line2' => 'max:255',
-				// 'pincode' => 'required|max:6|min:6',
+				'folder_path' => 'required',
+				'file_name' => [
+					'required',
+					'unique:import_types,file_name,' . $request->id . ',id',
+				],
+				'action' => 'required',
+				'permission' => 'required',
+				'template_file' => 'required',
 			], $error_messages);
 			if ($validator->fails()) {
 				return response()->json(['success' => false, 'errors' => $validator->errors()->all()]);
 			}
 
+			//VALIDATE UNIQUE FOR IMPORT-TYPE-COLUMNS
+			if (isset($request->columns) && !empty($request->columns)) {
+				$error_messages_1 = [
+					'default_column_name.required' => 'Default Column Name is required',
+					'default_column_name.unique' => 'Default Column Name is already taken',
+					'excel_column_name.required' => 'Excel Column Name is required',
+					'excel_column_name.unique' => 'Excel Column Name is already taken',
+				];
+
+				foreach ($request->columns as $column_key => $column) {
+					$validator_1 = Validator::make($column, [
+						'default_column_name' => [
+							'unique:import_type_columns,default_column_name,' . $column['id'] . ',id,company_id,' . Auth::user()->company_id . ',import_type_id,' . $column['import_type_id'],
+							'required',
+						],
+						'excel_column_name' => [
+							'unique:import_type_columns,excel_column_name,' . $column['id'] . ',id,company_id,' . Auth::user()->company_id . ',import_type_id,' . $column['import_type_id'],
+							'required',
+						],
+					], $error_messages_1);
+
+					if ($validator_1->fails()) {
+						return response()->json(['success' => false, 'errors' => $validator_1->errors()->all()]);
+					}
+
+					//FIND DUPLICATE IMPORT-TYPE-COLUMNS
+					foreach ($request->columns as $search_key => $search_array) {
+						if ($search_array['default_column_name'] == $column['default_column_name']) {
+							if ($search_key != $column_key) {
+								return response()->json(['success' => false, 'errors' => ['Default Column Name is already taken']]);
+							}
+						}
+						if ($search_array['excel_column_name'] == $column['excel_column_name']) {
+							if ($search_key != $column_key) {
+								return response()->json(['success' => false, 'errors' => ['Excel Column Name is already taken']]);
+							}
+						}
+					}
+				}
+			}
+
 			DB::beginTransaction();
-			if (!$request->id) {
-				$import_type = new ImportType;
-				$import_type->created_by_id = Auth::user()->id;
-				$import_type->created_at = Carbon::now();
-				$import_type->updated_at = NULL;
-				$address = new Address;
-			} else {
-				$import_type = ImportType::withTrashed()->find($request->id);
-				$import_type->updated_by_id = Auth::user()->id;
-				$import_type->updated_at = Carbon::now();
-				$address = Address::where('address_of_id', 24)->where('entity_id', $request->id)->first();
-			}
+			$import_type = ImportType::find($request->id);
 			$import_type->fill($request->all());
-			$import_type->company_id = Auth::user()->company_id;
-			if ($request->status == 'Inactive') {
-				$import_type->deleted_at = Carbon::now();
-				$import_type->deleted_by_id = Auth::user()->id;
-			} else {
-				$import_type->deleted_by_id = NULL;
-				$import_type->deleted_at = NULL;
-			}
-			$import_type->gst_number = $request->gst_number;
-			$import_type->axapta_location_id = $request->axapta_location_id;
 			$import_type->save();
 
-			if (!$address) {
-				$address = new Address;
+			//DELETE IMPORT-TYPE-COLUMNS
+			if (!empty($request->import_field_removal_ids)) {
+				$import_field_removal_ids = json_decode($request->import_field_removal_ids, true);
+				ImportTypeColumn::withTrashed()->whereIn('id', $import_field_removal_ids)->forcedelete();
 			}
-			$address->fill($request->all());
-			$address->company_id = Auth::user()->company_id;
-			$address->address_of_id = 24;
-			$address->entity_id = $import_type->id;
-			$address->address_type_id = 40;
-			$address->name = 'Primary Address';
-			$address->save();
+
+			if (isset($request->columns) && !empty($request->columns)) {
+				foreach ($request->columns as $key => $column) {
+					$import_type_columns = ImportTypeColumn::withTrashed()->firstOrNew(['id' => $column['id']]);
+					$import_type_columns->company_id = Auth::user()->company_id;
+					$import_type_columns->fill($column);
+					if ($column['is_required'] == "Yes") {
+						$import_type_columns->is_required = 1;
+					} elseif ($column['is_required'] == "No") {
+						$import_type_columns->is_required = 0;
+					}
+					$import_type_columns->import_type_id = $import_type->id;
+					if (empty($column['id'])) {
+						$import_type_columns->created_by_id = Auth::user()->id;
+						$import_type_columns->created_at = date('Y-m-d H:i:s');
+					} else {
+						$import_type_columns->updated_by_id = Auth::user()->id;
+						$import_type_columns->updated_at = date('Y-m-d H:i:s');
+					}
+					$import_type_columns->save();
+				}
+			}
 
 			DB::commit();
-			if (!($request->id)) {
-				return response()->json(['success' => true, 'message' => ['ImportType Details Added Successfully']]);
-			} else {
-				return response()->json(['success' => true, 'message' => ['ImportType Details Updated Successfully']]);
-			}
+			return response()->json(['success' => true, 'message' => ['ImportType Details Updated Successfully']]);
 		} catch (Exceprion $e) {
 			DB::rollBack();
 			return response()->json(['success' => false, 'errors' => ['Exception Error' => $e->getMessage()]]);

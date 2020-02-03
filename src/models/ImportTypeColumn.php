@@ -12,14 +12,17 @@ class ImportTypeColumn extends Model {
 	protected $table = 'import_type_columns';
 	public $timestamps = true;
 	protected $fillable = [
-		'code',
-		'name',
-		'cust_group',
-		'dimension',
-		'mobile_no',
-		'email',
 		'company_id',
+		'import_type_id',
+		'default_column_name',
+		'excel_column_name',
+		'is_required',
 	];
+	protected $appends = ['switch_value'];
+
+	public function getSwitchValueAttribute() {
+		return $this->attributes['is_required'] == 1 ? 'Yes' : 'No';
+	}
 
 	public static function createFromObject($record_data) {
 

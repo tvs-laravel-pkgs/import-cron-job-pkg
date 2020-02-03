@@ -115,20 +115,11 @@ app.component('importTypeForm', {
                 }
             }
         ).then(function(response) {
-            console.log(response.data);
+            //console.log(response.data);
             self.import_type = response.data.import_type;
             self.action = response.data.action;
             self.theme = response.data.theme;
             $rootScope.loading = false;
-            // if (self.action == 'Edit') {
-            //     if (self.faq.deleted_at) {
-            //         self.switch_value = 'Inactive';
-            //     } else {
-            //         self.switch_value = 'Active';
-            //     }
-            // } else {
-            //     self.switch_value = 'Active';
-            // }
         });
 
         //ADD FIELDS
@@ -197,13 +188,14 @@ app.component('importTypeForm', {
                 },
             },
             invalidHandler: function(event, validator) {
-                checkAllTabNoty()
+                // checkAllTabNoty()
+                custom_noty('error', 'Please check in each tab and fix errors!');
             },
             submitHandler: function(form) {
                 let formData = new FormData($(form_id)[0]);
                 $('#submit').button('loading');
                 $.ajax({
-                        url: laravel_routes['saveFaq'],
+                        url: laravel_routes['saveImportType'],
                         method: "POST",
                         data: formData,
                         processData: false,
@@ -212,22 +204,29 @@ app.component('importTypeForm', {
                     .done(function(res) {
                         if (res.success == true) {
                             custom_noty('success', res.message)
-                            $location.path('/faq-pkg/faq/list');
+                            $location.path('/import-cron-job-pkg/import-type/list');
                             $scope.$apply();
                         } else {
                             if (!res.success == true) {
                                 $('#submit').button('reset');
-                                showErrorNoty(res)
+                                // showErrorNoty(res)
+                                var errors = '';
+                                for (var i in res.errors) {
+                                    errors += '<li>' + res.errors[i] + '</li>';
+                                }
+                                custom_noty('error', errors);
                             } else {
                                 $('#submit').button('reset');
-                                $location.path('/faq-pkg/faq/list');
+                                custom_noty('success', res.message)
+                                $location.path('/import-cron-job-pkg/import-type/list');
                                 $scope.$apply();
                             }
                         }
                     })
                     .fail(function(xhr) {
                         $('#submit').button('reset');
-                        showServerErrorNoty()
+                        // showServerErrorNoty()
+                        custom_noty('error', 'Something went wrong at server');
                     });
             }
         });
