@@ -7,8 +7,40 @@
 
 <!-- IMPORT JOBS -->
 <script type="text/javascript">
-    var import_cron_job_list_template_url = "{{URL::asset($import_cron_job_pkg_path.'public/angular/import-cron-job-pkg/pages/import-cron-job/list.html')}}";
-    var import_cron_job_from_template_url = "{{URL::asset($import_cron_job_pkg_path.'public/angular/import-cron-job-pkg/pages/import-cron-job/form.html')}}";
+	app.config(['$routeProvider', function($routeProvider) {
+
+	    $routeProvider.
+	    //ImportCronJob
+	    when('/import-cron-job-pkg/import-job/list', {
+	        template: '<import-cron-job-list></import-cron-job-list>',
+	        title: 'Import Status',
+	    }).
+	    when('/import-cron-job-pkg/import-job/form/:id', {
+	        template: '<import-cron-job-form></import-cron-job-form>',
+	        title: 'Add Import Status',
+	    })
+	}]);
+
+	app.config(['$routeProvider', function($routeProvider) {
+
+	    $routeProvider.
+	    when('/import-cron-job-pkg/import-type/list', {
+	        template: '<import-type-list></import-type-list>',
+	        title: 'Import Types',
+	    }).
+	    when('/import-cron-job-pkg/import-type/add', {
+	        template: '<import-type-form></import-type-form>',
+	        title: 'Add Import Type',
+	    }).
+	    when('/import-cron-job-pkg/import-type/edit/:id', {
+	        template: '<import-type-form></import-type-form>',
+	        title: 'Edit Import Type',
+	    });
+	}]);
+
+
+    var import_cron_job_list_template_url = "{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/list.html')}}";
+    var import_cron_job_from_template_url = "{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/form.html')}}";
     var import_cron_job_from_data_url = "{{url('import-cron-job-pkg/import-jobs/get-from-data/')}}";
     var import_cron_job_delete = "{{url('import-cron-job-pkg/import-job/delete/')}}";
     var import_cron_job_template_base_path = "{{URL::asset('/public/templates/')}}";

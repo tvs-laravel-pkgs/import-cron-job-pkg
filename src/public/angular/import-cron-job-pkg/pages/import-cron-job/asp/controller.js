@@ -1,17 +1,3 @@
-app.config(['$routeProvider', function($routeProvider) {
-
-    $routeProvider.
-    //ImportCronJob
-    when('/import-cron-job-pkg/import-job/list', {
-        template: '<import-cron-job-list></import-cron-job-list>',
-        title: 'Import Status',
-    }).
-    when('/import-cron-job-pkg/import-job/form/:id', {
-        template: '<import-cron-job-form></import-cron-job-form>',
-        title: 'Add Import Status',
-    })
-}]);
-
 app.component('importCronJobList', {
     templateUrl: import_cron_job_list_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {

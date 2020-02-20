@@ -1,20 +1,3 @@
-app.config(['$routeProvider', function($routeProvider) {
-
-    $routeProvider.
-    when('/import-cron-job-pkg/import-type/list', {
-        template: '<import-type-list></import-type-list>',
-        title: 'Import Types',
-    }).
-    when('/import-cron-job-pkg/import-type/add', {
-        template: '<import-type-form></import-type-form>',
-        title: 'Add Import Type',
-    }).
-    when('/import-cron-job-pkg/import-type/edit/:id', {
-        template: '<import-type-form></import-type-form>',
-        title: 'Edit Import Type',
-    });
-}]);
-
 app.component('importTypeList', {
     templateUrl: import_type_list_template_url,
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {
