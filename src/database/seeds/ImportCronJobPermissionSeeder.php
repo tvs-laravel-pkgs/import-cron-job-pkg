@@ -73,23 +73,28 @@ class ImportCronJobPermissionSeeder extends Seeder {
 			//IMPORT JOB STATUSES
 			7200 => [
 				'name' => 'Pending',
-				'entity_type_id' => 7008,
+				// 'entity_type_id' => 7008,
+				'config_type_id' => 7008,
 			],
 			7201 => [
 				'name' => 'Inprogress',
-				'entity_type_id' => 7008,
+				// 'entity_type_id' => 7008,
+				'config_type_id' => 7008,
 			],
 			7202 => [
 				'name' => 'Completed',
-				'entity_type_id' => 7008,
+				// 'entity_type_id' => 7008,
+				'config_type_id' => 7008,
 			],
 			7203 => [
 				'name' => 'Error',
-				'entity_type_id' => 7008,
+				// 'entity_type_id' => 7008,
+				'config_type_id' => 7008,
 			],
 			7204 => [
 				'name' => 'Calculating Total Records',
-				'entity_type_id' => 7008,
+				// 'entity_type_id' => 7008,
+				'config_type_id' => 7008,
 			],
 		];
 

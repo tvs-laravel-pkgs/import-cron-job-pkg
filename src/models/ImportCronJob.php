@@ -113,7 +113,7 @@ class ImportCronJob extends Model {
 					],
 				];
 			}
-		//dump($import_type);
+			//dump($import_type);
 			ini_set('max_execution_time', 0);
 			ini_set('memory_limit', '-1');
 			$attachment = 'excel_file';
@@ -136,7 +136,7 @@ class ImportCronJob extends Model {
 
 			$number_columns = $import_type->columns()->count('id');
 			//$number_columns=100;
-			$column_range=self::getNameFromNumber($number_columns);
+			$column_range = self::getNameFromNumber($number_columns);
 			//dd($column_range);
 			/*dd($column_range);
 			//$numeric = ($number_columns - 1) % 26;
@@ -175,7 +175,7 @@ class ImportCronJob extends Model {
 
 			$columns = $import_type->columns()->where('is_required', 1)->pluck('excel_column_name');
 			$mandatory_fields = $columns;
-			//dd($mandatory_fields, $header);
+			// dd($mandatory_fields, $header);
 			$missing_fields = [];
 			foreach ($mandatory_fields as $mandatory_field) {
 				if (!in_array($mandatory_field, $header)) {
@@ -250,14 +250,14 @@ class ImportCronJob extends Model {
 	}
 
 	public static function getNameFromNumber($num) {
-	    $numeric = ($num - 1) % 26;
-	    $letter = chr(65 + $numeric);
-	    $num2 = intval(($num - 1) / 26);
-	    if ($num2 > 0) {
-	        return self::getNameFromNumber($num2) . $letter;
-	    } else {
-	        return $letter;
-	    }
+		$numeric = ($num - 1) % 26;
+		$letter = chr(65 + $numeric);
+		$num2 = intval(($num - 1) / 26);
+		if ($num2 > 0) {
+			return self::getNameFromNumber($num2) . $letter;
+		} else {
+			return $letter;
+		}
 	}
 
 	public function incrementNew() {
@@ -290,7 +290,8 @@ class ImportCronJob extends Model {
 		$total_records = $highestRow - 1;
 		$job->total_record_count = $total_records;
 		$job->remaining_count = $total_records;
-		$job->status_id = 7201; //Inprogress
+		// $job->status_id = 7201; //Inprogress
+		$job->status_id = 7200; //Inprogress
 		$job->save();
 		return [
 			'rows' => $rows,
