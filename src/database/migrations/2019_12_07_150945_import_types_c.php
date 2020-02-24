@@ -17,6 +17,10 @@ class ImportTypesC extends Migration {
 				$table->string('name', 191);
 				$table->string('folder_path', 255);
 				$table->string('file_name', 191);
+				$table->string('action', 255);
+
+				$table->string('permission', 255);
+				$table->string('template_file', 255);
 
 				$table->unique(["name"]);
 				$table->unique(["file_name"]);

@@ -12,7 +12,7 @@ class ImportTypesU82yvdhj extends Migration {
 	 */
 	public function up() {
 		Schema::table('import_types', function (Blueprint $table) {
-			$table->string('action', 255)->after('file_name');
+			// $table->string('action', 255)->after('file_name');
 		});
 	}
 
@@ -23,7 +23,7 @@ class ImportTypesU82yvdhj extends Migration {
 	 */
 	public function down() {
 		Schema::table('import_types', function (Blueprint $table) {
-			$table->dropColumn('action');
+			// $table->dropColumn('action');
 		});
 	}
 }

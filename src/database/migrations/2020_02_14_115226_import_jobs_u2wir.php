@@ -12,7 +12,7 @@ class ImportJobsU2wir extends Migration {
 	 */
 	public function up() {
 		Schema::table('import_jobs', function (Blueprint $table) {
-			$table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
+			// $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
 		});
 
 	}

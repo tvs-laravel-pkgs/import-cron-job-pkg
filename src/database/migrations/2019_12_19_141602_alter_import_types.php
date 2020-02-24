@@ -12,8 +12,8 @@ class AlterImportTypes extends Migration {
 	 */
 	public function up() {
 		Schema::table('import_types', function (Blueprint $table) {
-			$table->string('permission', 255)->after('action');
-			$table->string('template_file', 255)->after('permission');
+			// $table->string('permission', 255)->after('action');
+			// $table->string('template_file', 255)->after('permission');
 		});
 	}
 
@@ -24,8 +24,8 @@ class AlterImportTypes extends Migration {
 	 */
 	public function down() {
 		Schema::table('import_types', function (Blueprint $table) {
-			$table->dropColumn('permission');
-			$table->dropColumn('template_file');
+			// $table->dropColumn('permission');
+			// $table->dropColumn('template_file');
 		});
 	}
 }
