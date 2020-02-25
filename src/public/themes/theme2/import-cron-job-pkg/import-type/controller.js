@@ -51,11 +51,12 @@ app.component('importTypeList', {
 
             columns: [
                 { data: 'action', class: 'action', name: 'action', searchable: false },
-                { data: 'import_type_action', name: 'import_types.action' },
+                { data: 'name', name: 'import_types.name' },
                 { data: 'folder_path', name: 'import_types.folder_path' },
                 { data: 'file_name', name: 'import_types.file_name  ' },
                 { data: 'permission', name: 'import_types.permission' },
-                { data: 'template_file', name: 'import_types.template_file' },
+                // { data: 'template_file', name: 'import_types.template_file' },
+                { data: 'import_type_action', name: 'import_types.action' },
             ],
             "infoCallback": function(settings, start, end, max, total, pre) {
                 $('#table_info').html(total)

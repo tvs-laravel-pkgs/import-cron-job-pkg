@@ -33,8 +33,8 @@ class ImportTypeController extends Controller {
 				$edit_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow-active.svg');
 				$delete = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
 				$delete_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
-				// $edit_img = asset('public/theme/img/table/cndn/edit.svg');
-				// $delete_img = asset('public/theme/img/table/cndn/delete.svg');
+				$download = asset('public/themes/' . $this->data['theme'] . '/img/content/table/download.svg');
+				$download_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/download_active.svg');
 				$action = '';
 				if (Entrust::can('edit-import-type')) {
 					$action .= '<a href="#!/import-cron-job-pkg/import-type/edit/' . $import_type->id . '">
@@ -46,6 +46,9 @@ class ImportTypeController extends Controller {
 						<img src="' . $delete . '" alt="Delete" class="img-responsive" onmouseover=this.src="' . $delete_active . '" onmouseout=this.src="' . $delete . '" >
 						</a>';
 				}
+				$action .= '<a href="public/templates/' . $import_type->template_file . '">
+						<img src="' . $download . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $download_active . '" onmouseout=this.src="' . $download . '" ></a>';
+
 				return $action;
 			})
 			->make(true);
