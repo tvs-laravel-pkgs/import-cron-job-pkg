@@ -3,6 +3,7 @@ app.component('importCronJobList', {
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {
         var self = this;
         self.hasPermission = HelperService.hasPermission;
+        self.execute_cron_job_import = execute_cron_job_import;
         var table_scroll;
             table_scroll = $('.page-main-content').height() - 37;
         var dataTable = $('#table').DataTable({
@@ -114,7 +115,7 @@ app.component('importCronJobList', {
         $('.btn-refresh, #refresh-btn').on("click", function() {
             $('#table').DataTable().ajax.reload();
         });*/
-        
+
         $(".search_clear").on("click", function() {
             $('#search').val('');
             $('#table').DataTable().search('').draw();
@@ -166,7 +167,7 @@ app.component('importCronJobForm', {
         $http.get(
             get_form_data_url
         ).then(function(response) {
-            console.log(response);
+            // console.log(response.data);
             self.impoty_type = response.data.impoty_type;
             // if (self.impoty_type.permission != 'import-coupon') {
             //     $location.path('/page-not-found')

@@ -41,6 +41,7 @@
     var import_cron_job_from_template_url = "{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/form.html')}}";
     var import_cron_job_from_data_url = "{{url('import-cron-job-pkg/import-jobs/get-from-data/')}}";
     var import_cron_job_delete = "{{url('import-cron-job-pkg/import-job/delete/')}}";
+    var execute_cron_job_import = "{{url('import-cron-job-pkg/import-job-cron/execute')}}";
     var import_cron_job_template_base_path = "{{URL::asset('/public/templates/')}}";
 </script>
 <script type="text/javascript" src="{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/controller.js')}}"></script>

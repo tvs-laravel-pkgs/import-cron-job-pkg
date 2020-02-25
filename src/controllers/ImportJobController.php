@@ -12,6 +12,7 @@ use Yajra\Datatables\Datatables;
 class ImportJobController extends Controller {
 
 	public function __construct() {
+		$this->data['theme'] = config('custom.admin_theme');
 	}
 
 	public function getImportCronJobList(Request $request) {
@@ -51,12 +52,12 @@ class ImportJobController extends Controller {
 
 		return Datatables::of($import_jobs)
 			->addColumn('action', function ($import_jobs) {
-				$source = asset('/public/img/content/icons/upload_normal.svg');
-				$source_active = asset('/public/img/content/icons/upload_hover.svg');
-				$error = asset('/public/img/content/icons/error_normal.svg');
-				$error_active = asset('/public/img/content/icons/error_hover.svg');
-				$delete = asset('/public/img/content/table/delete-default.svg');
-				$delete_active = asset('/public/img/content/table/delete-active.svg');
+				$source = asset('/public/themes/' . $this->data['theme'] . '/img/content/icons/upload_normal.svg');
+				$source_active = asset('/public/themes/' . $this->data['theme'] . '/img/content/icons/upload_hover.svg');
+				$error = asset('/public/themes/' . $this->data['theme'] . '/img/content/icons/error_normal.svg');
+				$error_active = asset('/public/themes/' . $this->data['theme'] . '/img/content/icons/error_hover.svg');
+				$delete = asset('/public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
+				$delete_active = asset('/public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
 
 				return '<a href="storage/app/' . $import_jobs->src_file . '"><img src="' . $source . '" alt="Source File" class="img-responsive" onmouseover=this.src="' . $source_active . '" onmouseout=this.src="' . $source . '" ></a>
 					<a href="storage/app/' . $import_jobs->output_file . '"><img src="' . $error . '" alt="Error File" class="img-responsive" onmouseover=this.src="' . $error_active . '" onmouseout=this.src="' . $error . '" ></a>
