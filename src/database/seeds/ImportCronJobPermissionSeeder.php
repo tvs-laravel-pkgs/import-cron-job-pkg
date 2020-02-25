@@ -39,7 +39,7 @@ class ImportCronJobPermissionSeeder extends Seeder {
 				'display_order' => 99,
 				'parent' => null,
 				'name' => 'import-types',
-				'display_name' => 'Import Type',
+				'display_name' => 'Import Types',
 			],
 			[
 				'display_order' => 1,
@@ -50,7 +50,7 @@ class ImportCronJobPermissionSeeder extends Seeder {
 			[
 				'display_order' => 2,
 				'parent' => 'import-types',
-				'name' => 'delete-import-type',
+				'name' => 'edit-import-type',
 				'display_name' => 'Edit',
 			],
 			[
