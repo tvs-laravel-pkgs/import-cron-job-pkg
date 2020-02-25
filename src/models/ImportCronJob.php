@@ -290,8 +290,7 @@ class ImportCronJob extends Model {
 		$total_records = $highestRow - 1;
 		$job->total_record_count = $total_records;
 		$job->remaining_count = $total_records;
-		// $job->status_id = 7201; //Inprogress
-		$job->status_id = 7200; //Inprogress
+		$job->status_id = 7201; //Inprogress
 		$job->save();
 		return [
 			'rows' => $rows,
