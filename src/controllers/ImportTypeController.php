@@ -6,6 +6,7 @@ use Abs\ImportCronJobPkg\ImportTypeColumn;
 use App\Http\Controllers\Controller;
 use Auth;
 use DB;
+use Entrust;
 use Illuminate\Http\Request;
 use Validator;
 use Yajra\Datatables\Datatables;
@@ -21,7 +22,10 @@ class ImportTypeController extends Controller {
 			'import_types.*',
 			'import_types.action as import_type_action'
 		)
-			->orderby('import_types.id', 'desc');
+			->orderby('import_types.id', 'desc')
+		// ->get()
+		;
+		// dd($import_types);
 
 		return Datatables::of($import_types)
 			->addColumn('action', function ($import_type) {
@@ -29,14 +33,20 @@ class ImportTypeController extends Controller {
 				$edit_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow-active.svg');
 				$delete = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
 				$delete_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
-				$edit_img = asset('public/theme/img/table/cndn/edit.svg');
-				$delete_img = asset('public/theme/img/table/cndn/delete.svg');
-				return '<a href="#!/import-cron-job-pkg/import-type/edit/' . $import_type->id . '">
-						<img src="' . $edit . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $edit_active . '" onmouseout=this.src="' . $edit . '" ></a>
-						<a href="javascript:;" data-toggle="modal" data-target="#delete_import_type"
+				// $edit_img = asset('public/theme/img/table/cndn/edit.svg');
+				// $delete_img = asset('public/theme/img/table/cndn/delete.svg');
+				$action = '';
+				if (Entrust::can('edit-import-type')) {
+					$action .= '<a href="#!/import-cron-job-pkg/import-type/edit/' . $import_type->id . '">
+						<img src="' . $edit . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $edit_active . '" onmouseout=this.src="' . $edit . '" ></a>';
+				}
+				if (Entrust::can('delete-import-type')) {
+					$action .= '<a href="javascript:;" data-toggle="modal" data-target="#delete_import_type"
 						onclick="angular.element(this).scope().deleteImportType(' . $import_type->id . ')" dusk = "delete-btn" title="Delete">
 						<img src="' . $delete . '" alt="Delete" class="img-responsive" onmouseover=this.src="' . $delete_active . '" onmouseout=this.src="' . $delete . '" >
 						</a>';
+				}
+				return $action;
 			})
 			->make(true);
 	}
@@ -53,7 +63,7 @@ class ImportTypeController extends Controller {
 	}
 
 	public function saveImportType(Request $request) {
-		//dd($request->all());
+		// dd($request->all());
 		try {
 			$error_messages = [
 				'name.required' => 'ImportType is Required',

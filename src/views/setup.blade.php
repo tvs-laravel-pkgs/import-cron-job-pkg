@@ -1,4 +1,4 @@
-@if(config('custom.PKG_DEV'))
+@if(config('import-cron-job-pkg.DEV'))
     <?php $import_cron_job_pkg_path = 'packages/abs/import-cron-job-pkg/src/'?>
 @else
     <?php $import_cron_job_pkg_path = ''?>
@@ -8,7 +8,6 @@
 <!-- IMPORT JOBS -->
 <script type="text/javascript">
 	app.config(['$routeProvider', function($routeProvider) {
-
 	    $routeProvider.
 	    //ImportCronJob
 	    when('/import-cron-job-pkg/import-job/list', {
@@ -37,7 +36,6 @@
 	        title: 'Edit Import Type',
 	    });
 	}]);
-
 
     var import_cron_job_list_template_url = "{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/list.html')}}";
     var import_cron_job_from_template_url = "{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/form.html')}}";

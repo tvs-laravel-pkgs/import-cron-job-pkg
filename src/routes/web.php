@@ -12,8 +12,8 @@ Route::group(['namespace' => 'Abs\ImportCronJobPkg', 'middleware' => ['web', 'au
 
 	//IMPORT CONFIGURATIONS
 	Route::get('/import-types/get-list', 'ImportTypeController@getImportTypeList')->name('getImportTypeList');
-	Route::get('/import-type/get-form-data/{id}', 'ImportTypeController@getImportTypeFormData')->name('getImportTypeFormData');
+	Route::get('/import-type/get-form-data', 'ImportTypeController@getImportTypeFormData')->name('getImportTypeFormData');
 	Route::post('/import-type/save', 'ImportTypeController@saveImportType')->name('saveImportType');
-	Route::get('/import-type/delete/{id}', 'ImportTypeController@deleteImportType')->name('deleteImportType');
+	Route::get('/import-type/delete', 'ImportTypeController@deleteImportType')->name('deleteImportType');
 
 });
