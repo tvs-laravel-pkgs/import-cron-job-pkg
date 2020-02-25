@@ -3,24 +3,39 @@ app.component('importCronJobList', {
     controller: function($http, $location, HelperService, $scope, $routeParams, $rootScope, $location) {
         var self = this;
         self.hasPermission = HelperService.hasPermission;
-
+        var table_scroll;
+            table_scroll = $('.page-main-content').height() - 37;
         var dataTable = $('#table').DataTable({
-            "dom": dom_structure,
+            "dom": cndn_dom_structure,
             "language": {
-                "search": "",
-                "searchPlaceholder": "Search",
+                // "search": "",
+                // "searchPlaceholder": "Search",
                 "lengthMenu": "Rows Per Page _MENU_",
                 "paginate": {
                     "next": '<i class="icon ion-ios-arrow-forward"></i>',
                     "previous": '<i class="icon ion-ios-arrow-back"></i>'
                 },
             },
+            scrollX: true,
+            scrollY: table_scroll + "px",
+            scrollCollapse: true,
             stateSave: true,
-            pageLength: 10,
+            stateSaveCallback: function(settings, data) {
+                localStorage.setItem('SIDataTables_' + settings.sInstance, JSON.stringify(data));
+            },
+            stateLoadCallback: function(settings) {
+                var state_save_val = JSON.parse(localStorage.getItem('SIDataTables_' + settings.sInstance));
+                if (state_save_val) {
+                    $('#search').val(state_save_val.search.search);
+                }
+                return JSON.parse(localStorage.getItem('SIDataTables_' + settings.sInstance));
+            },
             processing: true,
             serverSide: true,
             paging: true,
+            searching: true,
             ordering: false,
+
             ajax: {
                 url: laravel_routes['getImportCronJobList'],
                 type: "GET",
@@ -50,10 +65,10 @@ app.component('importCronJobList', {
             ],
             "initComplete": function(settings, json) {
                 $('.dataTables_length select').select2();
-                $('#modal-loading').modal('hide');
             },
             "infoCallback": function(settings, start, end, max, total, pre) {
                 $('#table_info').html(total)
+                $('.foot_info').html('Showing ' + start + ' to ' + end + ' of ' + max + ' entries')
             },
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
@@ -66,9 +81,9 @@ app.component('importCronJobList', {
             }
         });
 
-        $('.page-header-content .display-inline-block .data-table-title').html('Import Status <span class="badge badge-secondary" id="table_info">0</span>');
-        $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
-        $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
+        // $('.page-header-content .display-inline-block .data-table-title').html('Import Status <span class="badge badge-secondary" id="table_info">0</span>');
+        // $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
+        // $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
 
         /*$('.add_new_button').html(
             '<button id="refresh-btn" type="button" class="btn btn-secondary" ng-click="refreshImportJob()">' +
@@ -92,11 +107,26 @@ app.component('importCronJobList', {
         setInterval(function() {
             $('#table').DataTable().ajax.reload();
         }, 60000);
-        $('.btn-add-close').on("click", function() {
+        /*$('.btn-add-close').on("click", function() {
             $('#table').DataTable().search('').draw();
         });
 
         $('.btn-refresh, #refresh-btn').on("click", function() {
+            $('#table').DataTable().ajax.reload();
+        });*/
+        
+        $(".search_clear").on("click", function() {
+            $('#search').val('');
+            $('#table').DataTable().search('').draw();
+        });
+
+        $("#search").on('keyup', function() {
+            dataTable
+                .search(this.value)
+                .draw();
+        });
+
+        $('.refresh_table').on("click", function() {
             $('#table').DataTable().ajax.reload();
         });
 
