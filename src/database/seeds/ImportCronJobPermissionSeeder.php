@@ -33,6 +33,18 @@ class ImportCronJobPermissionSeeder extends Seeder {
 				'name' => 'view-own-import-cron-job',
 				'display_name' => 'View Own Only',
 			],
+			[
+				'display_order' => 3,
+				'parent' => 'import-cron-jobs',
+				'name' => 'delete-import-cron-job',
+				'display_name' => 'Delete',
+			],
+			[
+				'display_order' => 4,
+				'parent' => 'import-cron-jobs',
+				'name' => 'execute-import-cron-job',
+				'display_name' => 'Execute',
+			],
 
 			//IMPORT TYPES
 			[
