@@ -1,113 +1,91 @@
 <!-- Content Wrap -->
 <div class="content-wrap">
-    <div class="page-header">
+    <!-- Page Main Content -->
+    <div class="page-main-content overflow-y-hidden">
         <div class="container">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="page-header-content">
-                        <div class="page-header-inner page-title display-inline-block">
-                            <div class="previous-page">
-                                <a href="#!/faq-pkg/faq/list">
-                                    <img src="./public/img/content/previous.svg" class="img-responsive">
-                                </a>
+                <div class="col-md-offset-3 col-md-6">
+                    <div class="page-content-inner">
+                        <form id="import-form" enctype="multipart/form-data">
+                            <input type="hidden" name="type_id" value="{{$ctrl.type_id}}">
+                            <div class="card-center">
+                                <div class="card-boxed card-progress">
+                                    <div class="row custom-row">
+                                        <div class="col-md-12">
+                                            <div class="text-center">
+                                                <h5 class="title">Import {{$ctrl.import_type.name}}</h5>
+                                            </div>
+                                        </div><!-- Column -->
+                                    </div><!-- Row -->
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card-item">
+                                                <div class="input-text form-group">
+                                                    <div class="input-group btn-file import-file">
+                                                        <input type="text" class="form-control" readonly="" placeholder="Select File" id="file_name">
+                                                        <span class="input-group-btn">
+                                                            <span class="btn btn-primary btn-circle">
+                                                                <input autocomplete="off" class="form-control" name="excel_file" id="excel_file" type="file" onchange="angular.element(this).scope().fileNameChanged(this)" ng-model="$ctrl.po_import_file">
+                                                                Browse
+                                                            </span>
+                                                            <button type="button" class="btn btn-over"><i class="icon ion-md-close progress-close" ng-click="progressClose()"></i></button>
+                                                        </span>
+                                                    </div> <!-- Input Field -->
+                                                    <span id="error_text" class="error_text"></span>
+                                                </div><!-- Field -->
+                                            </div><!-- Card Import -->
+                                        </div><!-- Column -->
+                                    </div><!-- Row -->
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <ul class="card-button">
+                                                <li class="text-left">
+                                                    <a id="po_item_template" class="btn btn-border" href="{{$ctrl.import_cron_job_template_base_path}}/{{$ctrl.impoty_type.template_file}}" download><i class="icon ion-md-download"></i>Download Template</a>
+                                                </li>
+                                                <li class="text-right">
+                                                    <input type="submit" class="btn btn-upload" id="upload" value="Upload">
+                                                </li>
+                                            </ul>
+                                        </div><!-- Column -->
+                                    </div><!-- Row -->
+                                </div><!-- Card Boxed -->
                             </div>
-                        </div><!-- Page Header Inner -->
-                        <div class="page-header-inner page-title display-inline-block">
-                            <h1 class="title">{{$ctrl.action}} FAQ</h1>
-                            <p class="subtitle">
-                                <a href="#!/faq-pkg/faq/list">
-                                    FAQs List
-                                </a> /
-                                {{$ctrl.action}}
-                            </p>
-                        </div><!-- Page Header Inner -->
-                    </div><!-- Page Header Content -->
+                        </form>
+                        <div class="card-transition">
+                            <div class="card-boxed">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="skills" data-percent="0%" id="import_progress">
+                                            <span>0% Completed</span>
+                                            <div class="skillbar" style="width:0%;"></div>
+                                        </div><!-- Skills -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-6">
+                                        <div class="card-block">
+                                            <p class="color-secondary-light">Total Records : <span id="total_count">Calculating</span></p>
+                                        </div><!-- Card Block -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-6">
+                                        <div class="card-block">
+                                            <p class="color-green">New Records : <span id="new_count">0</span></p>
+                                        </div><!-- Card Block -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-12">
+                                        <div class="card-block">
+                                            <p class="color-red">Error Records : <span id="error_count">0</span></p>
+                                        </div><!-- Card Block -->
+                                    </div><!-- Column -->
+                                    <div class="col-md-12">
+                                        <div class="text-center" style="margin-bottom: 20px;">
+                                            <a type="button" class="btn progress-close" ng-click="progressClose()">Close</a>
+                                        </div>
+                                    </div>
+                                </div><!-- Row -->
+                            </div><!-- Card Boxed -->
+                        </div>
+                    </div><!-- Page Content Inner -->
                 </div><!-- Col Main -->
             </div><!-- Row -->
         </div><!-- Container -->
-    </div><!-- Page Header -->
-    <!-- Page Main Content -->
-    <div class="page-main-content">
-        <form id="form" autocomplete="off">
-            <input type="hidden" name="id" value="{{$ctrl.faq.id}}">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="page-tab-form pb-80">
-                            <div class="tab-form-wrap">
-                                <div class="tab-form-header">
-                                    <div class="tab-header">
-                                        <div class="isotope-filters animated" data-animation="fadeInLeft" data-animation-delay="300">
-                                            <ul class="nav nav-pills editDetails-tabs">
-                                                <li class="active">
-                                                    <a data-target="#general-info" role="tab" data-toggle="tab" aria-expanded="true"> General Information
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div><!-- Filters -->
-                                    </div><!-- Tab Header -->
-                                </div><!-- Tab Form Header -->
-                                <div class="tab-form-body">
-                                    <div class="tab-content">
-                                        <!-- TAB PANEL -->
-                                        <div class="tab-pane fade in active" id="general-info" data-animation="fadeInUp" data-animation-delay="300">
-                                            <div class="tab-pane-wrap">
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label>
-                                                                Question
-                                                                <span class="mandatory">
-                                                                    *
-                                                                </span>
-                                                            </label>
-                                                            <input type="text" name="question" ng-model='$ctrl.faq.question' class="form-control required" placeholder="Enter Question">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label>
-                                                                Answer
-                                                                <span class="mandatory">
-                                                                    *
-                                                                </span>
-                                                            </label>
-                                                            <input type="text" name="answer" ng-model='$ctrl.faq.answer' class="form-control required" placeholder="Enter Answer">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label>
-                                                                Active Status
-                                                                <span class="mandatory">
-                                                                    *
-                                                                </span>
-                                                            </label>
-                                                            <md-switch ng-model="$ctrl.switch_value" aria-label="Switch 2" ng-true-value="'Inactive'" ng-false-value="'Active'" class="md-warn">
-                                                                {{ $ctrl.switch_value }}
-                                                            </md-switch>
-                                                            <input type="hidden" name="status" value="{{$ctrl.switch_value}}">
-                                                        </div><!-- Field -->
-                                                    </div><!-- Column -->
-                                                </div><!-- Row -->
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="tab-pane-footer text-right">
-                                                            <button type="submit" id="submit" class="btn btn-secondary">
-                                                                Submit
-                                                            </button>
-                                                        </div><!-- Tab Footer -->
-                                                    </div>
-                                                </div><!-- Row -->
-                                            </div><!-- Tab Pane Wrap -->
-                                        </div><!-- Tab Pane -->
-                                    </div><!-- Tab Content -->
-                                </div><!-- Tab Form Body -->
-                            </div><!-- Tab Form Wrap -->
-                        </div><!-- Page Tab Form -->
-                    </div><!-- Column -->
-                </div><!-- Row -->
-            </div><!-- Container -->
-        </form>
     </div><!-- Page Main Content -->
 </div><!-- Content Wrap -->
