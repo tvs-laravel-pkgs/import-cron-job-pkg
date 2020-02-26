@@ -59,12 +59,16 @@ class ImportJobController extends Controller {
 				$delete = asset('/public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
 				$delete_active = asset('/public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
 
-				return '<a href="storage/app/' . $import_jobs->src_file . '"><img src="' . $source . '" alt="Source File" class="img-responsive" onmouseover=this.src="' . $source_active . '" onmouseout=this.src="' . $source . '" ></a>
+				$action = '<a href="storage/app/' . $import_jobs->src_file . '"><img src="' . $source . '" alt="Source File" class="img-responsive" onmouseover=this.src="' . $source_active . '" onmouseout=this.src="' . $source . '" ></a>
 					<a href="storage/app/' . $import_jobs->output_file . '"><img src="' . $error . '" alt="Error File" class="img-responsive" onmouseover=this.src="' . $error_active . '" onmouseout=this.src="' . $error . '" ></a>
-					<a href="javascript:;" data-toggle="modal" data-target="#delete_import_job"
-					onclick="angular.element(this).scope().deleteImportJob(' . $import_jobs->id . ')" dusk = "delete-btn" title="Delete"><img src="' . $delete . '" alt="Delete" class="img-responsive" onmouseover=this.src="' . $delete_active . '" onmouseout=this.src="' . $delete . '" >
-					</a>'
+					'
 				;
+				if (Entrust::can('delete-import-cron-job')) {
+					$action .= '<a href="javascript:;" data-toggle="modal" data-target="#delete_import_job"
+					onclick="angular.element(this).scope().deleteImportJob(' . $import_jobs->id . ')" dusk = "delete-btn" title="Delete"><img src="' . $delete . '" alt="Delete" class="img-responsive" onmouseover=this.src="' . $delete_active . '" onmouseout=this.src="' . $delete . '" >
+					</a>';
+				}
+				return $action;
 			})
 		// ->addColumn('src_file', function ($import_jobs) {
 		// 	return '<a href="storage/app/' . $import_jobs->src_file . '">Download</a>';
