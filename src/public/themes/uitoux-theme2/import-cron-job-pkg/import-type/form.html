@@ -1,0 +1,203 @@
+<!-- Content Wrap -->
+<div class="content-wrap">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-inner">
+            <div class="page-header-content-left">
+                <div class="page-header-content button-block">
+                    <a href="#!/tax-pkg/tax/list" type="button" class="btn-back btn-img"><img class="img-responsive" src="./public/theme/img/content/previous.svg" alt="Back" /></a>
+                </div><!-- Page Header Content -->
+                <div class="page-header-content title-block">
+                    <h1 class="title">{{$ctrl.action}} Import Type</h1>
+                    <p class="subtitle">
+                        <a href="#!/import-cron-job-pkg/import-type/list">
+                            Import Types
+                        </a> /
+                        {{$ctrl.action}}
+                    </p>
+                </div><!-- Page Header Content -->
+            </div><!-- Page Header Content Left -->
+        </div><!-- Page Header Inner -->
+    </div><!-- Page Header -->
+    <!-- Page Main Content -->
+    <div class="page-main-content form-content type2" style="padding: 0;">
+        <form id="form" autocomplete="off">
+            <input type="hidden" name="id" value="{{$ctrl.import_type.id}}">
+            <div class="page-tab-form pb-70">
+                <div class="tab-form-wrap">
+                    <div class="tab-form-header">
+                        <div class="tab-header">
+                            <!-- Filters -->
+                            <div class="isotope-filters animated" data-animation="fadeInLeft" data-animation-delay="300">
+                                <ul class="nav nav-pills cndn-tabs">
+                                    <li class="active">
+                                        <a data-target="#general-info" role="tab" data-toggle="tab" aria-expanded="true"> General Information
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-target="#import-fields" role="tab" data-toggle="tab" aria-expanded="true">Fields</a>
+                                    </li>
+                                </ul>
+                            </div><!-- Filters -->
+                        </div><!-- Tab Header -->
+                    </div><!-- Tab Form Header -->
+                    <div class="tab-form-body">
+                        <div class="tab-content">
+                            <!-- TAB PANEL -->
+                            <div class="tab-pane fade in active" id="general-info" data-animation="fadeInUp" data-animation-delay="300">
+                                <div class="tab-pane-wrap">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    Name
+                                                    <span class="mandatory">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input type="text" name="name" ng-model="$ctrl.import_type.name" class="form-control required" placeholder="Enter Name" autocomplete="off" minlength="3" maxlength="191">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    Folder Path
+                                                    <span class="mandatory">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input type="text" name="folder_path" ng-model="$ctrl.import_type.folder_path" class="form-control required" placeholder="Enter Folder Path" autocomplete="off" minlength="3" maxlength="255">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    File Name
+                                                    <span class="mandatory">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input type="text" name="file_name" ng-model="$ctrl.import_type.file_name" class="form-control required" placeholder="Enter File Name" autocomplete="off" minlength="3" maxlength="191">
+                                            </div><!-- Field -->
+                                        </div><!-- Column -->
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    Action
+                                                    <span class="mandatory">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input type="text" name="action" ng-model="$ctrl.import_type.action" class="form-control required" placeholder="Enter Action" autocomplete="off" minlength="3" maxlength="255">
+                                            </div><!-- Field -->
+                                        </div><!-- Column -->
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    Permission
+                                                    <span class="mandatory">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input type="text" name="permission" ng-model="$ctrl.import_type.permission" class="form-control required" placeholder="Enter Permission" autocomplete="off" minlength="3" maxlength="255">
+                                            </div><!-- Field -->
+                                        </div><!-- Column -->
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>
+                                                    Template File
+                                                    <span class="mandatory">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input type="text" name="template_file" ng-model="$ctrl.import_type.template_file" class="form-control required" placeholder="Enter Template File" autocomplete="off" minlength="3" maxlength="255">
+                                            </div><!-- Field -->
+                                        </div><!-- Column -->
+                                        <div class="tab-pane-footer">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a class="btn btn-grey btn-nxt">Next</a>
+                                                    <button type="submit" id="submit" class="btn btn-secondary">
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div><!-- Tab Footer -->
+                                    </div><!-- Row -->
+                                </div><!-- Tab Pane Wrap -->
+                            </div><!-- Tab Pane -->
+                            <div class="tab-pane fade" id="import-fields" data-animation="fadeInUp" data-animation-delay="300">
+                                <div class="tab-pane-wrap">
+                                    <div class="row">
+                                        <div class="col-lg-8 col-md-10">
+                                            <h6 class="tab-pane-title">Import Type : <span class="color-primary-light">{{$ctrl.import_type.name}}</span></h6>
+                                            <div class="table-responsive">
+                                                <div class="form-page">
+                                                    <table class="table table-form">
+                                                        <thead>
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>Default Name <sup class="mandatory">*</sup></th>
+                                                                <th>Excel Name <sup class="mandatory">*</sup></th>
+                                                                <th>Required <sup class="mandatory">*</sup></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="(index, column) in $ctrl.import_type.columns">
+                                                                <input type="hidden" name="columns[{{index}}][id]" value="{{column.id}}">
+                                                                <input type="hidden" name="columns[{{index}}][import_type_id]" value="{{$ctrl.import_type.id}}">
+                                                                <td>
+                                                                    <a href="javascript:;" ng-click="removeImportFields(index,column.id)"><img src="./public/themes/{{$ctrl.theme}}/img/content/modal/close-circle-active.svg" class="img-fluid" alt="Delete"></a>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="text" name="columns[{{index}}][default_column_name]" ng-model='column.default_column_name' class="form-control required default_column_name" placeholder="Enter Default Name" autocomplete="off" minlength="3" maxlength="100">
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="text" name="columns[{{index}}][excel_column_name]" ng-model='column.excel_column_name' class="form-control required excel_column_name" placeholder="Enter Excel Column" autocomplete="off" minlength="3" maxlength="100">
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <div class="tab-switch md-switch-two">
+                                                                            <md-switch ng-model="column.switch_value" aria-label="Switch {{index}}" ng-true-value="'No'" ng-false-value="'Yes'" class="md-warn type-2">
+                                                                                {{ column.switch_value }}
+                                                                            </md-switch>
+                                                                        </div>
+                                                                        <input type="hidden" name="columns[{{index}}][is_required]" value="{{column.switch_value}}">
+                                                                    </div><!-- Field -->
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="3">
+                                                                    <button type="button" class="btn btn-primary-light btn-square" ng-click="addImportFields()">+ Add</button>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                    <input type="hidden" name="import_field_removal_ids" id="import_field_removal_ids" value="">
+                                                </div>
+                                            </div><!-- Table Responsive -->
+                                        </div><!-- Column -->
+                                        <div class="tab-pane-footer">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a class="btn btn-grey btn-prev">Previous</a>
+                                                    <button type="submit" class="btn btn-secondary submit">Submit</button>
+                                                </div>
+                                            </div>
+                                        </div><!-- Tab Footer -->
+                                    </div><!-- Row -->
+                                </div><!-- Tab Pane Wrap -->
+                            </div><!-- Tabe Pane -->
+                        </div><!-- Tab Content -->
+                    </div><!-- Tab Form Body -->
+                </div><!-- Tab Form Wrap -->
+            </div><!-- Page Tab Form -->
+        </form>
+    </div><!-- Page Main Content -->
+</div><!-- Content Wrap -->
