@@ -14,6 +14,7 @@ class ImportType extends Model {
 		'folder_path',
 		'file_name',
 		'action',
+		'sheet_index',
 		'permission',
 		'template_file',
 	];

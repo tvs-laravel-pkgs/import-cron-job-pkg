@@ -132,36 +132,10 @@ class ImportCronJob extends Model {
 			//dump($file);
 
 			$objPHPExcel = PHPExcel_IOFactory::load($file);
-			$sheet = $objPHPExcel->getSheet(0);
+			$sheet = $objPHPExcel->getSheet($import_type->sheet_index);
 
 			$number_columns = $import_type->columns()->count('id');
-			//$number_columns=100;
 			$column_range = self::getNameFromNumber($number_columns);
-			//dd($column_range);
-			/*dd($column_range);
-			//$numeric = ($number_columns - 1) % 26;
-			//dd($number_columns,$numeric);
-			$letter = chr(65 + $numeric);
-			dd($letter);
-			$num2 = intval(($number_columns - 1) / 26);
-			if ($num2 > 0) {
-				$numeric = ($num2 - 1) % 26;
-				$letter2 = chr(65 + $numeric);
-				dd($letter2);
-			//return getNameFromNumber($num2) . $letter;
-			} else {
-			return $letter;
-			}
-			dd($letter);
-			$rem=(int) ($number_columns % 26);
-			dd($rem);
-			dump($number_columns);
-			$alphabet = range('A', 'Z');
-			$char1 = (int) intdiv($number_columns, 26) - 1;
-			dd($char1);
-			$char1 = $alphabet[$char1];
-			$char2 = (int) ($number_columns % 26) - 2;
-			$char2 = $char2 != 0 ? $alphabet[$char2] : '';*/
 			$header = $sheet->rangeToArray('A1:' . $column_range . '1', NULL, TRUE, FALSE);
 			$header = $header[0];
 
@@ -272,10 +246,10 @@ class ImportCronJob extends Model {
 		$this->processed_count++;
 	}
 
-	public static function getRecordsFromExcel($job, $max_col) {
+	public static function getRecordsFromExcel($job, $max_col, $sheet_number = 0) {
 		//READING EXCEL FILE
 		$objPHPExcel = PHPExcel_IOFactory::load(storage_path('app/' . $job->src_file));
-		$sheet = $objPHPExcel->getSheet(0);
+		$sheet = $objPHPExcel->getSheet($sheet_number);
 		$highestRow = $sheet->getHighestDataRow();
 
 		$header = $sheet->rangeToArray('A1:' . $max_col . '1', NULL, TRUE, FALSE);

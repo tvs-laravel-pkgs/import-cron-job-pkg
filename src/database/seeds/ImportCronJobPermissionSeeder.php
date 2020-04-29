@@ -77,7 +77,7 @@ class ImportCronJobPermissionSeeder extends Seeder {
 		Permission::createFromArrays($permissions);
 
 		$config_types = [
-			7008 => 'Import Job Statuses',
+			7008 => 'Import Job Statuses1',
 		];
 
 		$configs = [

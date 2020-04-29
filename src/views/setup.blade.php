@@ -16,7 +16,7 @@
 	    }).
 	    when('/import-cron-job-pkg/import-job/form/:id', {
 	        template: '<import-cron-job-form></import-cron-job-form>',
-	        title: 'Add Import Status',
+	        title: 'Import Form',
 	    })
 	}]);
 
