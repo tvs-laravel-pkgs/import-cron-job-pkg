@@ -189,7 +189,6 @@ class ImportCronJob extends Model {
 				$reader->limitColumns(1);
 			})->get();
 			$total_records = count($total_records);
-
 			$import_job->src_file = $destination . $src_file_name;
 			$import_job->output_file = $destination . $import_job->id . '-report.xlsx';
 			$import_job->total_record_count = $total_records;
@@ -225,7 +224,7 @@ class ImportCronJob extends Model {
 
 	public static function getNameFromNumber($num) {
 		$numeric = ($num - 1) % 26;
-		$letter = chr(65 + $numeric);
+		$letter = chr(65 + ($numeric + 1));
 		$num2 = intval(($num - 1) / 26);
 		if ($num2 > 0) {
 			return self::getNameFromNumber($num2) . $letter;

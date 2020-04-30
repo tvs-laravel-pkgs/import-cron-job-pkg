@@ -108,6 +108,11 @@ class ImportCronJobPermissionSeeder extends Seeder {
 				// 'entity_type_id' => 7008,
 				'config_type_id' => 7008,
 			],
+			7205 => [
+				'name' => 'Completed With Errors',
+				// 'entity_type_id' => 7008,
+				'config_type_id' => 7008,
+			],
 		];
 
 		foreach ($config_types as $config_type_id => $config_type_name) {
