@@ -1,5 +1,7 @@
 <?php
+namespace Abs\ImportCronJobPkg\Database\Seeds;
 
+use Abs\ImportCronJobPkg\ImportType;
 use Illuminate\Database\Seeder;
 
 class ImportTypePkgSeeder extends Seeder {
@@ -143,7 +145,7 @@ class ImportTypePkgSeeder extends Seeder {
 				],
 			],
 		];
-		Abs\ImportCronJobPkg\ImportType::createMultipleFromArray($import_types);
+		ImportType::createMultipleFromArray($import_types);
 
 		return;
 	}
