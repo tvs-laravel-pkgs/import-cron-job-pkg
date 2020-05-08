@@ -76,6 +76,72 @@ class ImportTypePkgSeeder extends Seeder {
 					],
 				],
 			],
+			3 => [
+				'data' => [
+					'name' => 'Repair Order Import',
+					'folder_path' => 'public/file-imports/repair-orders/',
+					'file_name' => 'repair-orders',
+					'action' => 'Abs\GigoPkg\RepairOrder::importFromExcel',
+					'permission' => 'import-repair-order',
+					'template_file' => 'repair_order.xlsx',
+				],
+				'columns' => [
+					[
+						'company_id' => 1,
+						'default_column_name' => 'type',
+						'excel_column_name' => 'Type',
+						'is_required' => 1,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'code',
+						'excel_column_name' => 'Code',
+						'is_required' => 1,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'alt_code',
+						'excel_column_name' => 'Alt Code',
+						'is_required' => 0,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'name',
+						'excel_column_name' => 'Name',
+						'is_required' => 1,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'uom',
+						'excel_column_name' => 'UOM',
+						'is_required' => 0,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'skill_level',
+						'excel_column_name' => 'Skill Level',
+						'is_required' => 0,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'hours',
+						'excel_column_name' => 'Hours',
+						'is_required' => 1,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'amount',
+						'excel_column_name' => 'Amount',
+						'is_required' => 1,
+					],
+					[
+						'company_id' => 1,
+						'default_column_name' => 'tax_code',
+						'excel_column_name' => 'Tax Code',
+						'is_required' => 0,
+					],
+				],
+			],
 		];
 		Abs\ImportCronJobPkg\ImportType::createMultipleFromArray($import_types);
 
