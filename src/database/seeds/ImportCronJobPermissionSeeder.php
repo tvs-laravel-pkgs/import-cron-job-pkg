@@ -72,6 +72,14 @@ class ImportCronJobPermissionSeeder extends Seeder {
 				'display_name' => 'Delete',
 			],
 
+			//BUL IMPORT
+			[
+				'display_order' => 99,
+				'parent' => null,
+				'name' => 'bulk-import',
+				'display_name' => 'Bulk Import',
+			],
+
 		];
 
 		Permission::createFromArrays($permissions);

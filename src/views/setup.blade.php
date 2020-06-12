@@ -4,7 +4,6 @@
     <?php $import_cron_job_pkg_path = ''?>
 @endif
 
-
 <!-- IMPORT JOBS -->
 <script type="text/javascript">
 	app.config(['$routeProvider', function($routeProvider) {

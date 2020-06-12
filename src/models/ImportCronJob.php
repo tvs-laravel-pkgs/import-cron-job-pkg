@@ -129,40 +129,41 @@ class ImportCronJob extends Model {
 				return $response;
 			}
 			$file = $r->file($attachment)->getRealPath();
-			//dump($file);
-
-			$objPHPExcel = PHPExcel_IOFactory::load($file);
-			$sheet = $objPHPExcel->getSheet($import_type->sheet_index);
 
 			$number_columns = $import_type->columns()->count('id');
-			$column_range = self::getNameFromNumber($number_columns);
-			$header = $sheet->rangeToArray('A1:' . $column_range . '1', NULL, TRUE, FALSE);
-			$header = $header[0];
+			if ($number_columns != 0) {
+				$objPHPExcel = PHPExcel_IOFactory::load($file);
+				$sheet = $objPHPExcel->getSheet($import_type->sheet_index);
 
-			foreach ($header as $key => $column) {
-				$empty_columns = [];
-				if ($column == NULL) {
-					$empty_columns[] = $key;
-					unset($header[$key]);
-				}
-			}
+				$column_range = self::getNameFromNumber($number_columns);
+				$header = $sheet->rangeToArray('A1:' . $column_range . '1', NULL, TRUE, FALSE);
+				$header = $header[0];
 
-			$columns = $import_type->columns()->where('is_required', 1)->pluck('excel_column_name');
-			$mandatory_fields = $columns;
-			// dd($mandatory_fields, $header);
-			$missing_fields = [];
-			foreach ($mandatory_fields as $mandatory_field) {
-				if (!in_array($mandatory_field, $header)) {
-					$missing_fields[] = $mandatory_field;
+				foreach ($header as $key => $column) {
+					$empty_columns = [];
+					if ($column == NULL) {
+						$empty_columns[] = $key;
+						unset($header[$key]);
+					}
 				}
-			}
-			if (count($missing_fields) > 0) {
-				$response = [
-					'success' => false,
-					'message' => "Invalid Data, Mandatory fields are missing.",
-					'errors' => $missing_fields,
-				];
-				return $response;
+
+				$columns = $import_type->columns()->where('is_required', 1)->pluck('excel_column_name');
+				$mandatory_fields = $columns;
+				// dd($mandatory_fields, $header);
+				$missing_fields = [];
+				foreach ($mandatory_fields as $mandatory_field) {
+					if (!in_array($mandatory_field, $header)) {
+						$missing_fields[] = $mandatory_field;
+					}
+				}
+				if (count($missing_fields) > 0) {
+					$response = [
+						'success' => false,
+						'message' => "Invalid Data, Mandatory fields are missing.",
+						'errors' => $missing_fields,
+					];
+					return $response;
+				}
 			}
 
 			DB::beginTransaction();
@@ -184,10 +185,15 @@ class ImportCronJob extends Model {
 			Storage::makeDirectory($destination, 0777);
 			$r->file($attachment)->storeAs($destination, $src_file_name);
 
-			//CALCULATING TOTAL RECORDS
-			$total_records = Excel::load('storage/app/' . $destination . $src_file_name, function ($reader) {
-				$reader->limitColumns(1);
-			})->get();
+			try {
+				//CALCULATING TOTAL RECORDS
+				$total_records = Excel::load('storage/app/' . $destination . $src_file_name, function ($reader) {
+					$reader->limitColumns(1);
+				})->get();
+			} catch (\Exception $e) {
+
+				$total_records = [];
+			}
 			$total_records = count($total_records);
 			$import_job->src_file = $destination . $src_file_name;
 			$import_job->output_file = $destination . $import_job->id . '-report.xlsx';
