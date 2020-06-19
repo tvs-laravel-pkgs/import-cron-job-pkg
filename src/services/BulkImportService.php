@@ -44,7 +44,7 @@ abstract class BulkImportService {
 					dump('Import Type not found : ' . $sheet_detail['import_type']);
 					continue;
 				}
-				Excel::selectSheets($sheet_name)->load($excel_file_path, function ($reader) use ($sheet_name, $sheet_detail, $company, $specific_company, $tc, $import_type) {
+				Excel::selectSheets($sheet_name)->load($excel_file_path, function ($reader) use ($sheet_name, $sheet_detail, $company, $specific_company, $tc, $import_type, $all_error_records) {
 					$reader->limitColumns($sheet_detail['column_limit']);
 					$reader->skipRows($sheet_detail['skip']);
 					$reader->takeRows($sheet_detail['row_limit']);
