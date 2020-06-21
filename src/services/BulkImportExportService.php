@@ -2,11 +2,12 @@
 
 namespace Abs\ImportCronJobPkg\Services;
 
+use App\Employee;
 use App\ImportCronJob;
 use App\ImportType;
 use Excel;
 
-abstract class BulkImportService {
+abstract class BulkImportExportService {
 	public static function import($job) {
 		try {
 			ini_set('memory_limit', -1);
@@ -51,7 +52,6 @@ abstract class BulkImportService {
 					$records = $reader->get();
 					$errors = call_user_func($import_type->action, $records, $company, $specific_company, $tc);
 					$all_error_records = array_merge($all_error_records, $errors);
-					dump($errors);
 				});
 				dump($sheet_name . ' COMPLETED');
 			}
@@ -66,10 +66,52 @@ abstract class BulkImportService {
 			]);
 
 		} catch (\Throwable $e) {
-			// $job->status_id = 7203; //Error
+			$job->status_id = 7203; //Error
 			$job->error_details = 'Error:' . $e->getMessage() . '. Line:' . $e->getLine() . '. File:' . $e->getFile(); //Error
 			$job->save();
 			dump($job->error_details);
 		}
 	}
+
+	public static function export($job = null) {
+		try {
+			ini_set('memory_limit', -1);
+
+			$sheets = [];
+			$sheets[] = [
+				'name' => 'Employees',
+				'records' => Employee::getRecordsForExcel(),
+			];
+
+			$file_name = 'bulk-export-' . date('Y-m-d-h-i-s');
+			Excel::create($file_name, function ($excel) use ($sheets) {
+				// $excel->sheet('test', function ($sheet) {
+				// 	$sheet->fromArray([
+				// 		[
+				// 			'Company Code' => 'asdsd',
+				// 		],
+				// 	]);
+				// });
+
+				foreach ($sheets as $sheet_details) {
+					$records = $sheet_details['records'];
+					$excel->sheet($sheet_details['name'], function ($sheet) use ($records) {
+						$sheet->fromArray($records);
+					});
+				}
+			})->store('xlsx');
+			// return Storage::download(storage_path('exports/' . $file_name . '.xlsx'));
+			// //COMPLETED or completed with errors
+			// $job->status_id = 7202;
+			// $job->save();
+
+		} catch (\Throwable $e) {
+			// $job->status_id = 7203; //Error
+			// $job->error_details = 'Error:' . $e->getMessage() . '. Line:' . $e->getLine() . '. File:' . $e->getFile(); //Error
+			// $job->save();
+			// dump($job->error_details);
+			dd($e);
+		}
+	}
+
 }
