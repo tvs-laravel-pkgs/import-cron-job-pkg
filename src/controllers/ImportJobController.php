@@ -59,8 +59,8 @@ class ImportJobController extends Controller {
 				$delete = asset('/public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
 				$delete_active = asset('/public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
 
-				$action = '<a href="storage/app/' . $import_jobs->src_file . '"><img src="' . $source . '" alt="Source File" class="img-responsive" onmouseover=this.src="' . $source_active . '" onmouseout=this.src="' . $source . '" ></a>
-					<a href="storage/app/' . $import_jobs->output_file . '"><img src="' . $error . '" alt="Error File" class="img-responsive" onmouseover=this.src="' . $error_active . '" onmouseout=this.src="' . $error . '" ></a>
+				$action = '<a href="storage/app/' . $import_jobs->src_file . '" title="Source File"><img src="' . $source . '" alt="Source File" class="img-responsive" onmouseover=this.src="' . $source_active . '" onmouseout=this.src="' . $source . '" ></a>
+					<a href="storage/app/' . $import_jobs->output_file . '" title="Error Report"><img src="' . $error . '" alt="Error File" class="img-responsive" onmouseover=this.src="' . $error_active . '" onmouseout=this.src="' . $error . '" ></a>
 					'
 				;
 				if (Entrust::can('delete-import-cron-job')) {
