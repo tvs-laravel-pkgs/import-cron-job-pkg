@@ -74,7 +74,7 @@ abstract class BulkImportExportService {
 				'all_error_records' => $all_error_records,
 			]);
 
-		} catch (\Throwable $e) {
+		} catch (\Exception $e) {
 			//check before commit
 			// $job->status_id = 7203; //Error
 			$job->error_details = 'Error:' . $e->getMessage() . '. Line:' . $e->getLine() . '. File:' . $e->getFile(); //Error
