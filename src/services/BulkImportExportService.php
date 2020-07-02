@@ -63,6 +63,7 @@ abstract class BulkImportExportService {
 					}
 				});
 				dump($sheet_name . ' COMPLETED');
+				dump('-------------------------------------');
 			}
 
 			//COMPLETED or completed with errors
