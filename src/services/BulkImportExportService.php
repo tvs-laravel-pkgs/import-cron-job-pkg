@@ -67,7 +67,7 @@ abstract class BulkImportExportService {
 			}
 
 			//COMPLETED or completed with errors
-			$job->status_id = $job->error_count == 0 ? 7202 : 7205;
+			//$job->status_id = $job->error_count == 0 ? 7202 : 7205;
 			$job->save();
 
 			ImportCronJob::generateImportReport([
