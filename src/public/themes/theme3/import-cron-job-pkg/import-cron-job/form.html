@@ -17,7 +17,7 @@
                     <h2 class="masters-title">{{$ctrl.impoty_type.name}}</h2>
                     <div class="form-group">
                         <input class="masters-input uploade form-control" type="file" name="excel_file">
-                        <input class="masters-input uploaded form-control" type="text" placeholder='Click here to choose file'>
+                        <input class="masters-input uploaded form-control" type="text" placeholder='Click here to choose file' value="{{$ctrl.uploaded_file_name}}">
                         <button type="submit" id="upload" class="master-import-btn no-border">import <img src="{{ asset('resources/assets/images/arrow-pointing-to-right.svg') }}"></button>
                     </div>
                 </form>

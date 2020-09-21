@@ -113,6 +113,7 @@ app.component('importCronJobForm', {
 
         self.type_id = $routeParams.id;
         self.import_cron_job_template_base_path = import_cron_job_template_base_path;
+        self.uploaded_file_name = '';
         $http.get(
             get_form_data_url
         ).then(function(response) {
@@ -124,6 +125,11 @@ app.component('importCronJobForm', {
             // }
             // $rootScope.loading = false;
         });
+
+        $('input[type="file"]').change(function(e){
+            self.uploaded_file_name = e.target.files[0].name;
+            $scope.$apply()
+        });    
 
         /* Tab Funtion */
         var form_id = '#import-form';
