@@ -43,11 +43,11 @@
     var execute_cron_job_import = "{{url('import-cron-job-pkg/import-job-cron/execute')}}";
     var import_cron_job_template_base_path = "{{URL::asset('/public/templates/')}}";
 </script>
-<!-- <script type="text/javascript" src="{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/controller.js')}}"></script> -->
+<script type="text/javascript" src="{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-cron-job/controller.js')}}"></script>
 
 <!-- IMPORT TYPE -->
 <script type="text/javascript">
     var import_type_list_template_url = "{{asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-type/list.html')}}";
     var import_type_form_template_url = "{{asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-type/form.html')}}";
 </script>
-<!-- <script type="text/javascript" src="{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-type/controller.js')}}"></script> -->
+<script type="text/javascript" src="{{URL::asset($import_cron_job_pkg_path.'public/themes/'.$theme.'/import-cron-job-pkg/import-type/controller.js')}}"></script>
