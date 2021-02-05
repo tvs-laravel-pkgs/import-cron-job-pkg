@@ -28,28 +28,7 @@ class ImportJobCronController extends Controller {
 			}
 			dump($job);
 			dump($job->type->action);
-			//START TIME
-			$get_current_start_time = Carbon::now();
-			$start_time = $get_current_start_time->hour . ':' . $get_current_start_time->minute . ':' . $get_current_start_time->second;
-			$job->start_time = $start_time;
-
-			call_user_func($job->type->action, $job);
-
-			//END TIME
-			$get_current_end_time = Carbon::now();
-			$end_time = $get_current_end_time->hour . ':' . $get_current_end_time->minute . ':' . $get_current_end_time->second;
-			$job->end_time = $end_time;
-
-			$from_time = strtotime($start_time);
-			$to_time = strtotime($end_time);
-
-			if ($to_time < $from_time) {
-				$to_time += 86400;
-			}
-			$duration = date('H:i:s', strtotime("00:00:00") + ($to_time - $from_time));
-			$job->duration = $duration;
-
-			$job->save();
+			ImportCronJob::start($job);
 		} catch (\Throwable $e) {
 			$job->status_id = 7203; //Error
 			$job->error_details = 'Error:' . $e->getMessage() . '. Line:' . $e->getLine() . '. File:' . $e->getFile(); //Error

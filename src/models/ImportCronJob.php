@@ -5,6 +5,7 @@ namespace Abs\ImportCronJobPkg;
 use App\Company;
 use App\Config;
 use Auth;
+use Carbon\Carbon;
 use DB;
 use Excel;
 use Illuminate\Database\Eloquent\Model;
@@ -448,6 +449,32 @@ class ImportCronJob extends Model {
 		}
 		dump('Success.', $job->toArray());
 
+	}
+
+	public static function start($job){
+		//START TIME
+		$get_current_start_time = Carbon::now();
+		$start_time = $get_current_start_time->hour . ':' . $get_current_start_time->minute . ':' . $get_current_start_time->second;
+		$job->start_time = $start_time;
+
+		call_user_func($job->type->action, $job);
+
+		//END TIME
+		$get_current_end_time = Carbon::now();
+		$end_time = $get_current_end_time->hour . ':' . $get_current_end_time->minute . ':' . $get_current_end_time->second;
+		$job->end_time = $end_time;
+
+		$from_time = strtotime($start_time);
+		$to_time = strtotime($end_time);
+
+		if ($to_time < $from_time) {
+			$to_time += 86400;
+		}
+		$duration = date('H:i:s', strtotime("00:00:00") + ($to_time - $from_time));
+		$job->duration = $duration;
+
+		$job->save();
+		return $job;
 	}
 
 }
