@@ -3,20 +3,21 @@
 namespace Abs\ImportCronJobPkg;
 
 use App\Company;
-use App\Config;
+use App\Models\Config;
+use App\Models\ImportJob;
 use Auth;
 use Carbon\Carbon;
 use DB;
 use Excel;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
 use Validator;
+use \Abs\BasicPkg\Models\BaseModel;
 
-class ImportCronJob extends Model {
+class ImportCronJob extends BaseModel {
 	use SoftDeletes;
 	protected $table = 'import_jobs';
 	protected $fillable = [
@@ -29,9 +30,73 @@ class ImportCronJob extends Model {
 		'company_id',
 	];
 
+
+	// Custom attributes specified in this array will be appended to model
+	protected $appends = [
+		'src_file_url',
+		'output_file_url',
+	];
+
+	// Dynamic Attributes -------------------------
+	public function getSrcFileNameAttribute(){
+		return basename($this->src_file);
+	}
+
+	public function getOutputFileNameAttribute(){
+		return basename($this->output_file);
+	}
+
+	public function getSrcFileUrlAttribute(){
+		return url($this->src_file);
+	}
+
+	public function getOutputFileUrlAttribute(){
+		return url($this->output_file);
+	}
+
+	// Relationships to auto load -------------------------
+	public static function relationships($action = '', $format = ''): array
+	{
+		$relationships = [];
+
+		if ($action === 'index') {
+			$relationships = array_merge($relationships, [
+				'status',
+			]);
+		} else if ($action === 'read') {
+			$relationships = array_merge($relationships, [
+				 'status',
+				 'type',
+			]);
+		} else if ($action === 'save') {
+			$relationships = array_merge($relationships, [
+				// 'accountable',
+				// 'status',
+				// 'type',
+				// 'transactions',
+			]);
+		} else if ($action === 'options') {
+			$relationships = array_merge($relationships, [
+				// 'accountable',
+				//'accountable.address',
+				//'accountable.address.city',
+			]);
+		}
+
+		return $relationships;
+	}
+
+	// Relations ------------------------------------
+
 	public function type() {
 		return $this->belongsTo('Abs\ImportCronJobPkg\ImportType', 'type_id');
 	}
+
+	public function status() {
+		return $this->belongsTo(Config::class, 'status_id');
+	}
+
+	// Static operations ------------------------------------
 
 	public static function createFromObject($record_data) {
 
@@ -485,4 +550,20 @@ class ImportCronJob extends Model {
 		return $job;
 	}
 
+	// Query scopes --------------------------------------------------------------
+	public function scopeFilterEntityId($query, $entityId){
+		$query->where('entity_id',$entityId);
+	}
+
+	public function scopeFilterType($query, $type){
+		$typeId = $type instanceof ImportJob ? $type->id : $type;
+		$query->where('entity_id',$typeId);
+	}
+
+	public function scopeFilterByTypeCode($query, $typeCode){
+		$typeCode = $typeCode instanceof ImportJob ? $typeCode->code : $typeCode;
+		$query->whereHas('type', function ($query) use($typeCode){
+			$query->where('code','=',$typeCode);
+		});
+	}
 }
