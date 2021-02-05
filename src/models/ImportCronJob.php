@@ -398,9 +398,13 @@ class ImportCronJob extends Model {
 		$this->processed_count++;
 	}
 
-	public static function getRecordsFromExcel($job, $max_col, $sheet_number = 0) {
+	public static function getRecordsFromExcel($job, $max_col, $sheet_number = 0, $useStoragePath = true) {
 		//READING EXCEL FILE
-		$objPHPExcel = PHPExcel_IOFactory::load(storage_path('app/' . $job->src_file));
+		if($useStoragePath){
+			$objPHPExcel = PHPExcel_IOFactory::load(storage_path('app/' . $job->src_file));
+		}else{
+			$objPHPExcel = PHPExcel_IOFactory::load(public_path('../' . $job->src_file));
+		}
 		$sheet = $objPHPExcel->getSheet($sheet_number);
 		$highestRow = $sheet->getHighestDataRow();
 
@@ -424,11 +428,11 @@ class ImportCronJob extends Model {
 		];
 	}
 
-	public static function generateImportReport($params) {
+	public static function generateImportReport($params, $useStorage = true) {
 		$job = $params['job'];
 		$all_error_records = $params['all_error_records'];
 		if (count($all_error_records) > 0) {
-			Excel::create($job->id . '-report', function ($excel) use ($all_error_records, $job) {
+			$reportExcel = Excel::create($job->id . '-report', function ($excel) use ($all_error_records, $job) {
 				$excel->sheet('Error Details', function ($sheet) use ($all_error_records) {
 					foreach ($all_error_records as $key => $error_record) {
 						if ($key == 0) {
@@ -445,9 +449,13 @@ class ImportCronJob extends Model {
 						}
 					}
 				});
-			})->store('xlsx', storage_path('app/' . $job->type->folder_path));
+			});
+			if($useStorage){
+				$reportExcel->store('xlsx', storage_path('app/' . $job->type->folder_path));
+			}else{
+				$reportExcel->store('xlsx', public_path('../' . $job->output_file));
+			}
 		}
-		dump('Success.', $job->toArray());
 
 	}
 
