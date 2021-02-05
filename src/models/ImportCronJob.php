@@ -360,6 +360,7 @@ class ImportCronJob extends Model {
 			return [
 				'success' => true,
 				'message' => 'File added to import queue successfully',
+				'importJob' => $import_job,
 			];
 		} catch (\Exception $e) {
 			DB::rollBack();
