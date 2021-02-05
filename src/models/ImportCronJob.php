@@ -10,6 +10,7 @@ use Excel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
 use Validator;
@@ -198,6 +199,158 @@ class ImportCronJob extends Model {
 			$import_job->src_file = $destination . $src_file_name;
 			$import_job->output_file = $destination . $import_job->id . '-report.xlsx';
 			$import_job->total_record_count = $total_records;
+			$import_job->save();
+
+			//CREATING & STORING OUTPUT EXCEL FILE
+			// $output_file = $timetamp . '-output-file';
+			// Excel::create($output_file, function ($excel) use ($header) {
+			// 	$excel->sheet('Error Details', function ($sheet) use ($header) {
+			// 		// $headings = array_keys($header);
+			// 		// $headings[] = 'Error No';
+			// 		// $headings[] = 'Error Details';
+			// 		// $sheet->fromArray(array($headings));
+			// 	});
+			// })->store('xlsx', storage_path('app/' . $destination));
+			DB::commit();
+
+			return [
+				'success' => true,
+				'message' => 'File added to import queue successfully',
+			];
+		} catch (\Exception $e) {
+			DB::rollBack();
+
+			return [
+				'success' => false,
+				'errors' => [
+					$e->getMessage(),
+				],
+			];
+		}
+	}
+
+
+	public static function createImportJobFromArray($input): array
+	{
+		try {
+			$validator = Validator::make($input, [
+				'import_type_code' => [
+					'required:true',
+				],
+				'entity_id' => [
+					'nullable',
+					'numeric',
+				],
+				'file_name' => [
+					'required:true',
+				],
+			]);
+
+			if ($validator->fails()) {
+				return [
+					'success' => false,
+					'error' => 'Validation Error',
+					'errors' => $validator->errors()->all(),
+				];
+			}
+			//dump('in');
+
+			$import_type = ImportType::where('code',$input['import_type_code'])->first();
+			if (!$import_type) {
+				return [
+					'success' => false,
+					'error' => 'Validation Error',
+					'errors' => [
+						'Invalid Import Type',
+					],
+				];
+			}
+			//dump($import_type);
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '-1');
+			//$attachment = 'excel_file';
+
+			$attachment_extension = pathinfo($input['file_name'], PATHINFO_EXTENSION);
+			if ($attachment_extension != "xlsx" && $attachment_extension != "xls") {
+				$response = [
+					'success' => false,
+					'errors' => [
+						'Invalid file format, Please Import Excel Format File',
+					],
+				];
+				return $response;
+			}
+			$fileName = Arr::get($input,'file_name');
+			$filePath = public_path('files/'.$fileName);
+
+			$number_columns = $import_type->columns()->count('id');
+			if ($number_columns != 0) {
+				$objPHPExcel = PHPExcel_IOFactory::load($filePath);
+				$sheet = $objPHPExcel->getSheet($import_type->sheet_index);
+
+				$column_range = self::getNameFromNumber($number_columns);
+				$header = $sheet->rangeToArray('A1:' . $column_range . '1', NULL, TRUE, FALSE);
+				$header = $header[0];
+
+				foreach ($header as $key => $column) {
+					$empty_columns = [];
+					if ($column == NULL) {
+						$empty_columns[] = $key;
+						unset($header[$key]);
+					}
+				}
+
+				$columns = $import_type->columns()->where('is_required', 1)->pluck('excel_column_name');
+				$mandatory_fields = $columns;
+				// dd($mandatory_fields, $header);
+				$missing_fields = [];
+				foreach ($mandatory_fields as $mandatory_field) {
+					if (!in_array($mandatory_field, $header)) {
+						$missing_fields[] = $mandatory_field;
+					}
+				}
+				if (count($missing_fields) > 0) {
+					$response = [
+						'success' => false,
+						'message' => "Invalid Data, Mandatory fields are missing.",
+						'errors' => $missing_fields,
+					];
+					return $response;
+				}
+			}
+
+			DB::beginTransaction();
+			$import_job = new ImportCronJob;
+			$import_job->company_id = \Illuminate\Support\Facades\Auth::user()->company_id;
+			//$import_job->company_id = 1;
+			$import_job->type_id = $import_type->id;
+			$import_job->status_id = 7200; //PENDING
+			$import_job->entity_id = Arr::get($input,'entity_id','');
+			$import_job->total_record_count = Arr::get($input,'total_record_count','0');
+			$import_job->src_file = '';
+			$import_job->output_file = '';
+			$import_job->created_by_id = Auth::user()->id;
+			//$import_job->save();
+
+			//STORING UPLOADED EXCEL FILE
+			$destination = $import_type->folder_path;
+			$srcFileName = 'public/files/'.$fileName;
+			$import_job->src_file = $srcFileName;
+			$import_job->output_file = 'public/files/'. $import_job->id . '-report.xlsx';
+
+			if($import_job->total_record_count != 0){
+				try {
+					//CALCULATING TOTAL RECORDS
+					$total_records = Excel::load($filePath, function ($reader) {
+						$reader->limitColumns(1);
+					})->get();
+				} catch (\Exception $e) {
+
+					$total_records = [];
+				}
+				$import_job->total_record_count = count($total_records);
+			}
+
 			$import_job->save();
 
 			//CREATING & STORING OUTPUT EXCEL FILE

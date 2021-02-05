@@ -63,7 +63,7 @@ class ImportType extends Model {
 		foreach ($items as $id => $item) {
 			$errors = [];
 			$record = self::firstOrNew([
-				'id' => $id,
+				'code' => $item['data']['code'],
 			]);
 			$record->fill($item['data']);
 			$record->save();
