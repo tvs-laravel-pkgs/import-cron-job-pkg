@@ -453,7 +453,7 @@ class ImportCronJob extends Model {
 			if($useStorage){
 				$reportExcel->store('xlsx', storage_path('app/' . $job->type->folder_path));
 			}else{
-				$reportExcel->store('xlsx', public_path('../' . $job->output_file));
+				$reportExcel->store('xlsx', public_path('files/'));
 			}
 		}
 
