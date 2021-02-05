@@ -336,7 +336,6 @@ class ImportCronJob extends Model {
 			$destination = $import_type->folder_path;
 			$srcFileName = 'public/files/'.$fileName;
 			$import_job->src_file = $srcFileName;
-			$import_job->output_file = 'public/files/'. $import_job->id . '-report.xlsx';
 
 			if($import_job->total_record_count != 0){
 				try {
@@ -350,19 +349,12 @@ class ImportCronJob extends Model {
 				}
 				$import_job->total_record_count = count($total_records);
 			}
-
+			$import_job->remaining_count = $import_job->total_record_count;
+			$import_job->save();
+			$import_job->output_file = 'public/files/'. $import_job->id . '-report.xlsx';
 			$import_job->save();
 
-			//CREATING & STORING OUTPUT EXCEL FILE
-			// $output_file = $timetamp . '-output-file';
-			// Excel::create($output_file, function ($excel) use ($header) {
-			// 	$excel->sheet('Error Details', function ($sheet) use ($header) {
-			// 		// $headings = array_keys($header);
-			// 		// $headings[] = 'Error No';
-			// 		// $headings[] = 'Error Details';
-			// 		// $sheet->fromArray(array($headings));
-			// 	});
-			// })->store('xlsx', storage_path('app/' . $destination));
+
 			DB::commit();
 
 			return [
