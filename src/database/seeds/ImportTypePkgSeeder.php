@@ -143,7 +143,7 @@ class ImportTypePkgSeeder extends Seeder {
 			// 			'is_required' => 0,
 			// 		],
 			// 	],
-			],
+			// ],
 		];
 		ImportType::createMultipleFromArray($import_types);
 
