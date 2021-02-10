@@ -30,6 +30,7 @@ class ImportCronJob extends BaseModel {
 		'company_id',
 	];
 
+
 	// Custom attributes specified in this array will be appended to model
 	protected $appends = [
 		'src_file_url',
@@ -37,19 +38,19 @@ class ImportCronJob extends BaseModel {
 	];
 
 	// Dynamic Attributes -------------------------
-	public function getSrcFileNameAttribute() {
+	public function getSrcFileNameAttribute(){
 		return basename($this->src_file);
 	}
 
-	public function getOutputFileNameAttribute() {
+	public function getOutputFileNameAttribute(){
 		return basename($this->output_file);
 	}
 
-	public function getSrcFileUrlAttribute() {
+	public function getSrcFileUrlAttribute(){
 		return url($this->src_file);
 	}
 
-	public function getOutputFileUrlAttribute() {
+	public function getOutputFileUrlAttribute(){
 		return url($this->output_file);
 	}
 
@@ -64,8 +65,8 @@ class ImportCronJob extends BaseModel {
 			]);
 		} else if ($action === 'read') {
 			$relationships = array_merge($relationships, [
-				'status',
-				'type',
+				 'status',
+				 'type',
 			]);
 		} else if ($action === 'save') {
 			$relationships = array_merge($relationships, [
@@ -294,6 +295,7 @@ class ImportCronJob extends BaseModel {
 		}
 	}
 
+
 	public static function createImportJobFromArray($input): array
 	{
 		try {
@@ -319,7 +321,7 @@ class ImportCronJob extends BaseModel {
 			}
 			//dump('in');
 
-			$import_type = ImportType::where('code', $input['import_type_code'])->first();
+			$import_type = ImportType::where('code',$input['import_type_code'])->first();
 			if (!$import_type) {
 				return [
 					'success' => false,
@@ -344,8 +346,8 @@ class ImportCronJob extends BaseModel {
 				];
 				return $response;
 			}
-			$fileName = Arr::get($input, 'file_name');
-			$filePath = public_path('files/' . $fileName);
+			$fileName = Arr::get($input,'file_name');
+			$filePath = public_path('files/'.$fileName);
 
 			$number_columns = $import_type->columns()->count('id');
 			if ($number_columns != 0) {
@@ -389,8 +391,8 @@ class ImportCronJob extends BaseModel {
 			//$import_job->company_id = 1;
 			$import_job->type_id = $import_type->id;
 			$import_job->status_id = 7200; //PENDING
-			$import_job->entity_id = Arr::get($input, 'entity_id', '');
-			$import_job->total_record_count = Arr::get($input, 'total_record_count', '0');
+			$import_job->entity_id = Arr::get($input,'entity_id','');
+			$import_job->total_record_count = Arr::get($input,'total_record_count','0');
 			$import_job->src_file = '';
 			$import_job->output_file = '';
 			$import_job->created_by_id = Auth::user()->id;
@@ -398,10 +400,10 @@ class ImportCronJob extends BaseModel {
 
 			//STORING UPLOADED EXCEL FILE
 			$destination = $import_type->folder_path;
-			$srcFileName = 'public/files/' . $fileName;
+			$srcFileName = 'public/files/'.$fileName;
 			$import_job->src_file = $srcFileName;
 
-			if ($import_job->total_record_count != 0) {
+			if($import_job->total_record_count != 0){
 				try {
 					//CALCULATING TOTAL RECORDS
 					$total_records = Excel::load($filePath, function ($reader) {
@@ -415,8 +417,9 @@ class ImportCronJob extends BaseModel {
 			}
 			$import_job->remaining_count = $import_job->total_record_count;
 			$import_job->save();
-			$import_job->output_file = 'public/files/' . $import_job->id . '-report.xlsx';
+			$import_job->output_file = 'public/files/'. $import_job->id . '-report.xlsx';
 			$import_job->save();
+
 
 			DB::commit();
 
@@ -462,9 +465,9 @@ class ImportCronJob extends BaseModel {
 
 	public static function getRecordsFromExcel($job, $max_col, $sheet_number = 0, $useStoragePath = true) {
 		//READING EXCEL FILE
-		if ($useStoragePath) {
+		if($useStoragePath){
 			$objPHPExcel = PHPExcel_IOFactory::load(storage_path('app/' . $job->src_file));
-		} else {
+		}else{
 			$objPHPExcel = PHPExcel_IOFactory::load(public_path('../' . $job->src_file));
 		}
 		$sheet = $objPHPExcel->getSheet($sheet_number);
@@ -512,16 +515,16 @@ class ImportCronJob extends BaseModel {
 					}
 				});
 			});
-			if ($useStorage) {
+			if($useStorage){
 				$reportExcel->store('xlsx', storage_path('app/' . $job->type->folder_path));
-			} else {
+			}else{
 				$reportExcel->store('xlsx', public_path('files/'));
 			}
 		}
 
 	}
 
-	public static function start($job) {
+	public static function start($job){
 		//START TIME
 		$get_current_start_time = Carbon::now();
 		$start_time = $get_current_start_time->hour . ':' . $get_current_start_time->minute . ':' . $get_current_start_time->second;
@@ -548,25 +551,19 @@ class ImportCronJob extends BaseModel {
 	}
 
 	// Query scopes --------------------------------------------------------------
-	public function scopeFilterEntityId($query, $entityId) {
-		$query->where('entity_id', $entityId);
+	public function scopeFilterEntityId($query, $entityId){
+		$query->where('entity_id',$entityId);
 	}
 
-	public function scopeFilterType($query, $type) {
+	public function scopeFilterType($query, $type){
 		$typeId = $type instanceof ImportJob ? $type->id : $type;
-		$query->where('entity_id', $typeId);
+		$query->where('entity_id',$typeId);
 	}
 
-	public function scopeFilterByTypeCode($query, $typeCode) {
+	public function scopeFilterByTypeCode($query, $typeCode){
 		$typeCode = $typeCode instanceof ImportJob ? $typeCode->code : $typeCode;
-		$query->whereHas('type', function ($query) use ($typeCode) {
-			$query->where('code', '=', $typeCode);
+		$query->whereHas('type', function ($query) use($typeCode){
+			$query->where('code','=',$typeCode);
 		});
-	}
-
-	public function scopeFilterOrderBy($query, $orderBy) {
-		if (!empty($orderBy)) {
-			$query->orderBy('id', 'DESC');
-		}
 	}
 }
