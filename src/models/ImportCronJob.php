@@ -404,18 +404,11 @@ class ImportCronJob extends BaseModel {
 			if ($import_job->total_record_count != 0) {
 				try {
 					//CALCULATING TOTAL RECORDS
-					// $total_records = Excel::load($filePath, function ($reader) {
-					// 	$reader->limitColumns(1);
-					// })->get();
-
-					//UPDATED
-					$excel_data = Excel::load($filePath, function ($reader) {
-			            $reader->limitColumns(1);
-			            $reader->ignoreEmpty();
-			        })->get()->toArray();
-			        $total_records = array_filter($excel_data);
-			        
+					$total_records = Excel::load($filePath, function ($reader) {
+						$reader->limitColumns(1);
+					})->get();
 				} catch (\Exception $e) {
+
 					$total_records = [];
 				}
 				$import_job->total_record_count = count($total_records);
@@ -487,24 +480,6 @@ class ImportCronJob extends BaseModel {
 		}
 		$rows = $sheet->rangeToArray('A2:' . $max_col . $highestRow, NULL, TRUE, FALSE);
 		$total_records = $highestRow - 1;
-	
-		//UPDATED
-		$empty_removed_rows=[];
-		if(!empty($rows)){
-			foreach ($rows as $row_data) {
-	             if(!empty(array_values(array_filter($row_data)))){
-	                 $empty_removed_rows[]= $row_data;
-	             }   
-		    }
-
-		    if(!empty($empty_removed_rows)){
-		    	$rows =[];
-        		$rows = $empty_removed_rows;
-        		$total_records = count($rows);
-		    }
-		}
-
-		// dump($highestRow);
 		$job->total_record_count = $total_records;
 		$job->remaining_count = $total_records;
 		$job->status_id = 7201; //Inprogress
