@@ -16,6 +16,7 @@ class ImportJobController extends Controller {
 	}
 
 	public function getImportCronJobList(Request $request) {
+		$company_id = isset(Auth::user()->company_id) ? Auth::user()->company_id : 1;
 		$import_jobs = ImportCronJob::
 			join('import_types as type', 'type.id', '=', 'import_jobs.type_id')
 			->leftjoin('configs as status', 'status.id', '=', 'import_jobs.status_id')
@@ -42,7 +43,7 @@ class ImportJobController extends Controller {
 				'cb.name as created_by'
 			)
 		// ->where('import_jobs.company_id', Auth::user()->company_id)
-			->where('import_jobs.company_id', 1)
+			->where('import_jobs.company_id', $company_id)
 			->orderBy('import_jobs.created_at', 'DESC')
 		;
 

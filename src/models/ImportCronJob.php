@@ -235,7 +235,7 @@ class ImportCronJob extends BaseModel {
 			DB::beginTransaction();
 			$import_job = new ImportCronJob;
 			// $import_job->company_id = Auth::user()->company_id;
-			$import_job->company_id = 1;
+			$import_job->company_id = isset(Auth::user()->company_id) ? Auth::user()->company_id : 1;
 			$import_job->type_id = $import_type->id;
 			$import_job->status_id = 7200; //PENDING
 			$import_job->entity_id = $r->entity_id ? $r->entity_id : '';
