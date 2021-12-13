@@ -19,7 +19,7 @@ class ImportJobCronController extends Controller {
 			if (isset($params->type_id) && $params->type_id) {
 				$query->where('type_id', $params->type_id);
 			}
-			$query->where('status_id', 7200); //PENDING
+			$query->whereNotIn('type_id', [11562,11561,11560])->where('status_id', 7200); //PENDING
 
 			$job = $query->orderBy('import_jobs.created_at')->first();
 			if (!$job) {
